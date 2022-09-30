@@ -1,0 +1,95 @@
+$primary: #800020;
+$background: linear-gradient(-45deg, #0d0d0d 30%, #161616 100%);
+$shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px,
+    rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+$app-icon-size: 8rem;
+
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 100;
+    font-style: normal;
+    src: url(@/assets/fonts/CircularStd/CircularStd-Light.otf) format("opentype");
+}
+
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 300;
+    font-style: normal;
+    src: url(@/assets/fonts/CircularStd/CircularStd-Book.otf) format("opentype");
+}
+
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 500;
+    font-style: normal;
+    src: url(@/assets/fonts/CircularStd/CircularStd-Bold.otf) format("opentype");
+}
+
+@font-face {
+    font-family: "CircularStd";
+    font-weight: 900;
+    font-style: normal;
+    src: url(@/assets/fonts/CircularStd/CircularStd-Black.otf) format("opentype");
+}
+
+body {
+    font-family: "CircularStd", Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overscroll-behavior-x: none;
+    overflow: hidden;
+    background: linear-gradient(0deg, rgba(22, 22, 22, 1) 0%, rgba(48, 48, 48, 1) 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    color: white;
+}
+
+* {
+    &::-webkit-scrollbar {
+        width: 15px;
+    }
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+        background: rgb(40, 40, 40);
+        background-clip: padding-box;
+        border: 5px solid transparent;
+        border-radius: 8px;
+        &:hover {
+            background: rgb(50, 50, 50);
+            background-clip: padding-box;
+            border: 5px solid transparent;
+        }
+    }
+}
+
+.row {
+    display: flex;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+.spacer {
+    flex: 1;
+}
+
+.text-overflow {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.page-enter-active,
+.page-leave-active {
+    transition: opacity 0.5s;
+}
+.page-enter,
+.page-leave-to {
+    opacity: 0;
+}
