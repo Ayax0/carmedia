@@ -6,6 +6,7 @@ export default {
 
 <template>
     <div class="main">
+        <div class="header"><slot name="header" /></div>
         <div class="grid">
             <slot />
         </div>
@@ -18,6 +19,15 @@ export default {
     height: 100vh;
     overflow: hidden;
     overflow-y: auto;
+    display: grid;
+    grid-template-rows: 3rem calc(100% - 3rem);
+
+    .header {
+        background: rgba(20,20,20,0.5);
+        box-shadow: $shadow;
+        display: flex;
+        align-items: center;
+    }
 
     .grid {
         width: 100%;
