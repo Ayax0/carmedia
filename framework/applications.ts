@@ -1,31 +1,46 @@
+export interface Application {
+    id: string;
+    name: string;
+    icon: string;
+    thumbnail: string;
+    path?: string;
+    keepalive?: boolean;
+    category?: string;
+    settings?: string;
+    onstart?: () => void;
+    onstop?: () => void;
+}
+
 const applications: Array<Application> = [
     {
+        id: "spotify",
         name: "Spotify",
-        icon: "/assets/icons/spotify.png",
+        icon: "mdi:spotify",
+        thumbnail: "/assets/icons/spotify.png",
         path: "/app/spotify",
-        onstart: () => console.log("test"),
+        settings: "/settings/spotify",
     },
     {
+        id: "soundcloud",
         name: "Soundcloud",
-        icon: "/assets/icons/soundcloud.png",
-        onstart: () => console.log("test"),
+        icon: "mdi:soundcloud",
+        thumbnail: "/assets/icons/soundcloud.png",
     },
     {
+        id: "navigation",
         name: "Navigation",
-        icon: "/assets/icons/maps.webp",
+        icon: "mdi:navigation-variant",
+        thumbnail: "/assets/icons/maps.webp",
         path: "/app/maps",
-        onstart: () => console.log("test"),
+        settings: "/settings/navigation",
+    },
+    {
+        id: "settings",
+        name: "Einstellungen",
+        icon: "mdi:cogs",
+        thumbnail: "/assets/icons/settings.png",
+        path: "/settings",
     },
 ];
 
 export default applications;
-
-interface Application {
-    name: string;
-    icon: string;
-    path?: string;
-    keepalive?: boolean;
-    category?: string;
-    onstart?: () => void;
-    onstop?: () => void;
-}

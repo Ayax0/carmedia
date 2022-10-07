@@ -14,11 +14,14 @@ export default {
 <template>
     <NuxtLayout name="app">
         <template #header>
-            <vbutton icon="mdi:arrow-left" height="3rem" width="4rem" />
-            <div>Home</div>
+            <div class="spacer"></div>
+            <status-icon icon="mdi:bluetooth" width="2.5rem" />
+            <status-icon icon="mdi:signal" width="2.5rem" />
         </template>
         <template #default>
             <app-icon v-for="app in apps" :key="app.name" :app="app" />
         </template>
     </NuxtLayout>
 </template>
+
+<style lang="scss" scoped></style>

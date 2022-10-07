@@ -1,5 +1,4 @@
 import AudioPlayer from "./AudioPlayer";
-import * as ls from "local-storage";
 import "@types/spotify-web-playback-sdk";
 
 export default class SpotifyPlayer extends AudioPlayer {
@@ -9,7 +8,7 @@ export default class SpotifyPlayer extends AudioPlayer {
         window.onSpotifyWebPlaybackSDKReady = () => {
             // TODO
             this.player = new window.Spotify.Player({
-                name: ls.get<string>("device_name") || "CarMedia",
+                name: undefined, //TODO
                 getOAuthToken: (cb) => cb("TODO"),
             });
         };

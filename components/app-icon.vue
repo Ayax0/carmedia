@@ -1,20 +1,21 @@
 <script>
+import carmedia from "@/framework";
+
 export default {
     name: "AppIconComponent",
     props: {
         app: { type: Object, required: true },
     },
     methods: {
-        start() {
-            if (this.app.path) navigateTo(this.app.path);
-            if (this.app.onstart) this.app.onstart();
+        click() {
+            carmedia.openApplication(this.app);
         },
     },
 };
 </script>
 
 <template>
-    <div v-ripple class="application" :style="{ 'background-image': `url(${app.icon})` }" @click="start">
+    <div v-ripple class="application" :style="{ 'background-image': `url(${app.thumbnail})` }" @click="click">
         <div class="label text-overflow">{{ app.name }}</div>
     </div>
 </template>

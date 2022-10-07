@@ -23,10 +23,11 @@ export default {
     grid-template-rows: 3rem calc(100% - 3rem);
 
     .header {
-        background: rgba(20,20,20,0.5);
+        background: rgba(20, 20, 20, 0.5);
         box-shadow: $shadow;
         display: flex;
         align-items: center;
+        padding: 0 0.5rem;
     }
 
     .grid {
