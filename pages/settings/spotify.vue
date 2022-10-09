@@ -23,6 +23,7 @@ export default {
                 "streaming",
                 "user-read-private",
                 "user-library-read",
+                "user-read-recently-played",
             ];
         },
         redirect_uri() {
@@ -52,9 +53,9 @@ export default {
                 }).toString();
         },
         async exchange(code) {
-            const spotify_api = new SpotifyAPI(this.client_id, this.client_secret, this.redirect_uri);
+            const spotify_api = new SpotifyAPI(this.client_id, this.client_secret);
             try {
-                const exchange = await spotify_api.exchange(code);
+                const exchange = await spotify_api.exchange(code, this.redirect_uri);
                 const account = await spotify_api.instance.get("/me");
 
                 this.accounts = this.accounts.filter((_account) => _account.id != account.data.id);
@@ -87,7 +88,8 @@ export default {
         <vtextfield v-model="client_secret" title="Client Secret" />
         <div class="title">Verbundene Accounts</div>
         <div class="account" v-for="account in accounts">
-            <img :src="account.images[0]?.url" />
+            <img v-if="account.images[0]" :src="account.images[0]?.url" />
+            <div v-else class="avatar">{{ account.display_name.charAt(0) }}</div>
             <div class="info">
                 <div class="name">{{ account.display_name }}</div>
                 <div class="follower">{{ account.followers.total || 0 }} Follower</div>
@@ -116,10 +118,22 @@ export default {
         box-shadow: $shadow;
         padding: 0.5rem;
 
-        img {
+        img,
+        .avatar {
             width: 4rem;
             height: 4rem;
             border-radius: 2rem;
+            box-shadow: $shadow;
+        }
+
+        .avatar {
+            background: rgb(40, 40, 40);
+            color: rgb(100, 100, 100);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 42px;
+            text-transform: uppercase;
         }
 
         .info {

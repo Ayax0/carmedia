@@ -1,11 +1,6 @@
 <script>
-import { Icon } from "@iconify/vue";
-
 export default {
     name: "SettingCategoryComponent",
-    components: {
-        Icon,
-    },
     props: {
         title: { type: String, default: "Unbenannt" },
         icon: { type: String, default: undefined },
@@ -27,7 +22,7 @@ export default {
 
 <template>
     <div v-ripple class="setting-category" :class="{ alt, active }" @click="click">
-        <Icon :icon="icon" width="2rem" />
+        <span class="mdi" :class="icon" style="font-size: 2rem" />
         <div class="title">{{ title }}</div>
     </div>
 </template>

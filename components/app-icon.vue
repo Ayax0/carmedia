@@ -15,7 +15,7 @@ export default {
 </script>
 
 <template>
-    <div v-ripple class="application" :style="{ 'background-image': `url(${app.thumbnail})` }" @click="click">
+    <div v-ripple class="application" :style="{ 'background-image': app ? `url(${app.thumbnail})` : '' }" @click="click">
         <div class="label text-overflow">{{ app.name }}</div>
     </div>
 </template>

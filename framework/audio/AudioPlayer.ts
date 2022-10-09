@@ -1,9 +1,18 @@
 export default abstract class AudioPlayer {
-    private listeners: Array<(state: AudioPlayerState) => void> = new Array();
+    protected listeners: Array<(state: AudioPlayerState) => void> = new Array();
+    public player_state: AudioPlayerState;
 
     subscribe(cb: (state: AudioPlayerState) => void) {
         this.listeners.push(cb);
     }
+
+    update(state: AudioPlayerState) {
+        this.listeners.forEach((listener) => listener(state));
+        this.player_state = state;
+    }
+
+    abstract connect(): Promise<any>;
+    abstract disconnect(): Promise<any>;
 
     abstract play(): Promise<any>;
     abstract pause(): Promise<any>;
@@ -12,12 +21,15 @@ export default abstract class AudioPlayer {
 }
 
 interface AudioPlayerState {
-    isPlaying: boolean;
+    paused: boolean;
+    position: number;
     track: AudioTrack;
+    timestamp: number;
 }
 
 interface AudioTrack {
     name: string;
+    album: string;
     artists: Array<string>;
     thumbnail?: string;
     length?: number;

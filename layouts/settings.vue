@@ -14,7 +14,8 @@ export default {
 <template>
     <div class="main">
         <div class="sidebar">
-            <setting-category title="Zurück" icon="mdi:arrow-left-circle" alt href="/app" />
+            <setting-category title="Zurück" icon="mdi-arrow-left-circle" alt href="/app" />
+            <setting-category title="Allgemein" icon="mdi-car" href="/settings" />
             <setting-category
                 v-for="category in categories"
                 :key="category.id"

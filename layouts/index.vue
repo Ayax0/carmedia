@@ -1,11 +1,38 @@
-<script>
+<script lang="ts">
+import carmedia from "@/framework";
+
 export default {
     name: "IndexLayout",
-    props: {
-        progress: { type: Number, default: 0 },
-        thumbnail: { type: String, default: "" },
-        song: { type: String, default: "-" },
-        artist: { type: String, default: "Unbekannter Interpret" },
+    data() {
+        return {
+            thumbnail: null,
+            song: "-",
+            artist: "Unbekannter Interpret",
+            progress: 0,
+        };
+    },
+    methods: {
+        updateState(state) {
+            this.thumbnail = state.track?.thumbnail;
+            this.song = state.track?.name || "-";
+            this.artist = state.track?.artists?.join(", ") || "Unbekannter Interpret";
+        },
+    },
+    mounted() {
+        carmedia.activeAudioPlayer?.subscribe((state) => this.updateState(state));
+        if (carmedia.activeAudioPlayer?.player_state) this.updateState(carmedia.activeAudioPlayer?.player_state);
+
+        setInterval(() => {
+            if (!carmedia.activeAudioPlayer) return;
+            if (!carmedia.activeAudioPlayer.player_state) return;
+
+            const paused = carmedia.activeAudioPlayer.player_state.paused;
+            const trackLength = carmedia.activeAudioPlayer.player_state.track?.length;
+            const lastPosition = carmedia.activeAudioPlayer.player_state.position;
+            const timeDifference = Date.now() - carmedia.activeAudioPlayer.player_state.timestamp;
+
+            if (!paused) this.progress = (100 / trackLength) * (lastPosition + timeDifference);
+        }, 1000);
     },
 };
 </script>
@@ -17,7 +44,7 @@ export default {
         </div>
         <div class="timeline"><div class="thumb" :style="{ '--prog': progress + '%' }" /></div>
         <div class="control">
-            <div class="thumbnail" :style="{ 'background-image': `url(${thumbnail})` }"></div>
+            <div class="thumbnail" :style="{ 'background-image': thumbnail ? `url(${thumbnail})` : '' }"></div>
             <div class="info">
                 <div class="song text-overflow">{{ song }}</div>
                 <div class="artist text-overflow">{{ artist }}</div>
@@ -34,6 +61,12 @@ export default {
     display: grid;
     grid-template-rows: auto 5px 8rem;
 
+    .content {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+    }
+
     .timeline {
         background: rgba(0, 0, 0, 0.5);
 
@@ -43,6 +76,7 @@ export default {
             width: var(--prog);
             min-width: 5px;
             max-width: 100%;
+            transition: width 1s ease;
         }
     }
     .control {

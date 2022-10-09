@@ -1,9 +1,6 @@
 <script>
-import { Icon } from "@iconify/vue";
-
 export default {
     name: "ButtonComponent",
-    components: { Icon },
     props: {
         icon: { type: String, required: true },
         iconSize: { type: String, default: "2.5rem" },
@@ -14,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <div v-ripple class="button" :style="{ width, height }"><Icon :icon="icon" :height="iconSize" /></div>
+    <div v-ripple class="button" :style="{ width, height }"><span class="mdi" :class="icon" :style="{ 'font-size': iconSize }" /></div>
 </template>
 
 <style lang="scss" scoped>

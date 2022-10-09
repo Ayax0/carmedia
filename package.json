@@ -14,8 +14,7 @@
         "sass-loader": "^10.3.1"
     },
     "dependencies": {
-        "@iconify/vue": "^4.0.0",
-        "@types/spotify-web-playback-sdk": "^0.1.15",
+        "@mdi/font": "^7.0.96",
         "axios": "^0.27.2",
         "socket.io": "^4.5.2",
         "socket.io-client": "^4.5.2",

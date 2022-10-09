@@ -1,11 +1,6 @@
 <script>
-import { Icon } from "@iconify/vue";
-
 export default {
     name: "StatusIconComponent",
-    components: {
-        Icon,
-    },
     props: {
         icon: { type: String, required: true },
         iconSize: { type: String, default: "1.5rem" },
@@ -16,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <div class="status-icon" :style="{ width, height }"><Icon :icon="icon" :height="iconSize" /></div>
+    <div class="status-icon" :style="{ width, height }"><span class="mdi" :class="icon" :style="{ 'font-size': iconSize }" /></div>
 </template>
 
 <style lang="scss" scoped>
