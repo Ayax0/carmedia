@@ -22,7 +22,7 @@ export default {
 <template>
     <div class="main">
         <div class="header">
-            <div class="spotify" @click="navigateTo('/app')"><span class="mdi mdi-apps"></span></div>
+            <div class="spotify" @click="navigateTo('/app')"><span class="mdi mdi-apps" style="margin-left: -5px"></span></div>
             <div class="spacer"></div>
             <div class="home-button" @click="navigateTo('/spotify')"><span class="mdi mdi-home"></span></div>
             <div class="search-input">
@@ -56,7 +56,7 @@ export default {
         align-items: center;
         justify-content: center;
         background: #000;
-        padding: 0 1rem;
+        padding: 0 2rem;
         gap: 1rem;
 
         .spotify {

@@ -2,57 +2,48 @@ export default {
     methods: {
         getImageColor(image) {
             return new Promise((resolve, reject) => {
-                var blockSize = 5,
-                    defaultRGB = { r: 0, g: 0, b: 0 },
-                    bottom_threshold = 50,
-                    top_threshold = 240,
-                    canvas = document.createElement("canvas"),
-                    context = canvas.getContext && canvas.getContext("2d"),
-                    data,
-                    width,
-                    height,
-                    img = new Image(),
-                    i = -4,
-                    length,
-                    rgb = { r: 0, g: 0, b: 0 },
-                    count = 0;
+                const defaultRGB = { r: 40, g: 40, b: 40 };
+                const blockSize = 5;
+                const roundToNext = 10;
+                const topThreshold = 245;
+                const bottomThreshold = 60;
+                const minVariance = 20;
 
-                if (!context) {
-                    return defaultRGB;
-                }
-
-                height = canvas.height = image.height;
-                width = canvas.width = image.width;
+                const dataset = [];
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext && canvas.getContext("2d");
+                const heigth = (canvas.height = image.height || 200);
+                const width = (canvas.width = image.width || 200);
+                const img = new Image();
 
                 img.crossOrigin = "anonymous";
                 img.src = image.url;
                 img.onload = () => {
                     context.drawImage(img, 0, 0);
-
                     try {
-                        data = context.getImageData(0, 0, width, height);
-                    } catch (e) {
-                        reject(defaultRGB);
-                    }
+                        const data = context.getImageData(0, 0, width, heigth);
 
-                    length = data.data.length;
+                        for (let i = 0; i < data.data.length - blockSize * 4; i += blockSize * 4) {
+                            const r = Math.round(data.data[i] / roundToNext) * roundToNext;
+                            const g = Math.round(data.data[i + 1] / roundToNext) * roundToNext;
+                            const b = Math.round(data.data[i + 2] / roundToNext) * roundToNext;
+                            const variance = [r, g, b].sort((a, b) => b - a);
 
-                    while ((i += blockSize * 4) < length) {
-                        if (!(data.data[i] < bottom_threshold && data.data[i + 1] < bottom_threshold && data.data[i + 2] < bottom_threshold)) {
-                            if (data.data[i] < top_threshold && data.data[i + 1] < top_threshold && data.data[i + 2] < top_threshold) {
-                                ++count;
-                                rgb.r += data.data[i];
-                                rgb.g += data.data[i + 1];
-                                rgb.b += data.data[i + 2];
-                            }
+                            if ((r + g + b) / 3 > topThreshold || (r + g + b) / 3 < bottomThreshold) continue;
+                            if (Math.abs(variance[0] - variance[2]) < minVariance) continue;
+
+                            const index = dataset.findIndex((item) => item.r == r && item.g == g && item.b == b);
+                            if (index > -1) dataset[index].c++;
+                            else dataset.push({ r, g, b, c: 1 });
                         }
+
+                        dataset.sort((a, b) => b.c - a.c);
+                        console.log(dataset[0]);
+                        return resolve(dataset[0] || defaultRGB);
+                    } catch (error) {
+                        console.log(error);
+                        return reject(defaultRGB);
                     }
-
-                    rgb.r = ~~(rgb.r / count);
-                    rgb.g = ~~(rgb.g / count);
-                    rgb.b = ~~(rgb.b / count);
-
-                    resolve(rgb);
                 };
             });
         },
