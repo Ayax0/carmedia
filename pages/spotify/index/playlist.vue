@@ -32,6 +32,22 @@ export default {
             const seconds = total - minutes * 60;
             return `${minutes}:${seconds.toLocaleString("de-CH", { minimumIntegerDigits: 2 })}`;
         },
+        playTrack(track) {
+            if (!this.playlist) return;
+            if (!track) return;
+
+            const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+            activeAudioPlayer.api.instance
+                .put("/me/player/play", {
+                    context_uri: this.playlist.uri,
+                    offset: { uri: track.uri },
+                })
+                .then(() => console.log("start playing track"))
+                .catch((error) => console.log(error.response))
+                .then(() => {
+                    navigateTo("/");
+                });
+        },
     },
 };
 </script>
@@ -45,7 +61,7 @@ export default {
                     <th>Titel</th>
                     <th><span class="mdi mdi-clock-outline"></span></th>
                 </tr>
-                <tr v-for="(item, index) in playlist?.tracks?.items">
+                <tr v-for="(item, index) in playlist?.tracks?.items" v-ripple @click="playTrack(item.track)">
                     <td>{{ index + 1 }}</td>
                     <td>
                         <div class="track-info">
