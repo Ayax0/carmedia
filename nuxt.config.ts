@@ -9,6 +9,9 @@ export default defineNuxtConfig({
                 },
             },
         },
+        build: {
+            sourcemap: false,
+        },
     },
     modules: ["./modules/socket.server"],
 });
