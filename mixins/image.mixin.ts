@@ -38,10 +38,8 @@ export default {
                         }
 
                         dataset.sort((a, b) => b.c - a.c);
-                        console.log(dataset[0]);
                         return resolve(dataset[0] || defaultRGB);
                     } catch (error) {
-                        console.log(error);
                         return reject(defaultRGB);
                     }
                 };

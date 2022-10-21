@@ -12,7 +12,7 @@ export default {
         };
     },
     watch: {
-        playlists(value) {
+        shows(value) {
             console.log(value);
         },
     },
@@ -50,6 +50,7 @@ export default {
                     :thumbnail="item.show?.images[0]?.url"
                     :title="item.show?.name"
                     :subtitle="item.show?.publisher"
+                    @click="navigateTo('/spotify/show?id=' + item.show.id)"
                 />
             </div>
         </template>
@@ -61,6 +62,7 @@ export default {
                     :thumbnail="item.images[0]?.url"
                     :title="item.name"
                     :subtitle="item.owner?.display_name"
+                    @click="navigateTo('/spotify/playlist?id=' + item.id)"
                 />
             </div>
         </template>

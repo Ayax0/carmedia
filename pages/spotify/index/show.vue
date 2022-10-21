@@ -3,23 +3,26 @@ import carmedia from "@/framework";
 import SpotifyPlayer from "@/framework/audio/SpotifyPlayer";
 
 export default {
-    name: "SpotifyPlaylistPage",
+    name: "SpotifyShowPage",
     data() {
         return {
-            playlist: undefined,
+            show: undefined,
         };
     },
     computed: {
-        playlist_id() {
+        show_id() {
             return this.$route.query.id;
         },
         thumbnail() {
-            return this.playlist?.images[0] || { url: "" };
+            return this.show?.images[0] || { url: "" };
         },
     },
     mounted() {
         const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
-        activeAudioPlayer.api.instance.get("/playlists/" + this.playlist_id).then((res) => (this.playlist = res.data));
+        activeAudioPlayer.api.instance
+            .get("/shows/" + this.show_id)
+            .then((res) => (this.show = res.data))
+            .then(() => console.log(this.show));
     },
     methods: {
         formatDuration(duration_ms) {
@@ -28,7 +31,7 @@ export default {
             const seconds = total - minutes * 60;
             return `${minutes}:${seconds.toLocaleString("de-CH", { minimumIntegerDigits: 2 })}`;
         },
-        playTrack(track) {
+        playEpisode(track) {
             if (!this.playlist) return;
             if (!track) return;
 
@@ -49,7 +52,7 @@ export default {
 </script>
 
 <template>
-    <NuxtLayout name="spotify-item" :thumbnail="thumbnail" category="Playlist" :title="playlist?.name" :info="playlist?.owner?.display_name">
+    <NuxtLayout name="spotify-item" :thumbnail="thumbnail" category="Podcast" :title="show?.name" :info="show?.publisher">
         <div class="playlist-body">
             <table>
                 <tr>
@@ -57,7 +60,7 @@ export default {
                     <th>Titel</th>
                     <th><span class="mdi mdi-clock-outline"></span></th>
                 </tr>
-                <tr v-for="(item, index) in playlist?.tracks?.items" v-ripple @click="playTrack(item.track)">
+                <tr v-for="(item, index) in show?.tracks?.items" v-ripple @click="playEpisode(item.track)">
                     <td>{{ index + 1 }}</td>
                     <td>
                         <div class="track-info">

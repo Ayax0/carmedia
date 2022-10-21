@@ -69,7 +69,7 @@ export default {
         background: linear-gradient(transparent 0, rgba(0, 0, 0, 0.5) 100%), $noise;
         display: grid;
         padding: 2rem;
-        grid-template-columns: 11rem auto;
+        grid-template-columns: 11rem calc(100% - 11rem);
         grid-template-rows: 100%;
 
         .thumbnail {
@@ -92,8 +92,6 @@ export default {
             .type,
             .title,
             .info {
-                display: flex;
-                align-items: flex-end;
                 padding: 0 2rem;
             }
 
