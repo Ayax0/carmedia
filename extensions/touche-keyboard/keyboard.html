@@ -1,0 +1,215 @@
+<style>
+    .keyboard-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 6rem calc(100% - 6rem);
+        overflow: hidden;
+        pointer-events: none;
+        font-family: "Roboto";
+        z-index: 2000;
+    }
+
+    .keyboard-wrapper.active {
+        pointer-events: all;
+    }
+
+    .keyboard-wrapper .input {
+        display: grid;
+        grid-template-columns: auto 6rem;
+        transform: translateY(-100%);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .keyboard-wrapper.active .input {
+        transform: translateY(0);
+    }
+
+    .keyboard-wrapper .input input {
+        padding: 0 1rem;
+        font-size: 25px;
+    }
+
+    .keyboard-wrapper .input input:focus {
+        outline: none;
+    }
+
+    .keyboard-wrapper .input .clear {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: rgb(40, 40, 40);
+        color: white;
+        border: 1px solid black;
+    }
+
+    .keyboard-wrapper .keyboard {
+        width: 100%;
+        height: 100%;
+        background: rgb(20, 20, 20);
+        box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px,
+            rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        display: flex;
+        flex-direction: column;
+        transform: translateY(100%);
+        transition: transform 0.2s ease-in-out;
+    }
+
+    .keyboard-wrapper.active .keyboard {
+        transform: translateY(0);
+    }
+
+    .keyboard .row {
+        flex: 1;
+        max-width: 100vw;
+        margin: 0;
+    }
+
+    .keyboard .row * {
+        flex: 1;
+    }
+
+    .keyboard .row .key,
+    .keyboard .row .special-key {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: 0 0 0 1px black;
+        color: white;
+        user-select: none;
+        font-size: 25px;
+    }
+
+    .special-key span {
+        text-align: center;
+        font-size: 25px;
+    }
+
+    .keyboard-wrapper.special .keyboard .row {
+        display: none;
+    }
+
+    .keyboard-wrapper.special .keyboard .row.special {
+        display: flex;
+    }
+
+    .keyboard-wrapper .keyboard .row.special {
+        display: none;
+    }
+
+    .keyboard-wrapper .keyboard .row {
+        display: flex;
+    }
+
+    .keyboard-wrapper.shift .key {
+        text-transform: uppercase !important;
+    }
+
+    .keyboard-wrapper .key {
+        text-transform: lowercase !important;
+    }
+
+    .keyboard-wrapper.shift .special-key[data-action="shift"] {
+        background: rgb(35, 35, 35);
+    }
+</style>
+
+<div id="keyboard" class="keyboard-wrapper">
+    <div class="input">
+        <input id="keyboard-input" type="text" spellcheck="false" />
+        <div id="keyboard-clear" class="clear"><span class="mdi mdi-close"></span></div>
+    </div>
+    <div class="keyboard">
+        <div class="row">
+            <div class="key">Q</div>
+            <div class="key">W</div>
+            <div class="key">E</div>
+            <div class="key">R</div>
+            <div class="key">T</div>
+            <div class="key">Z</div>
+            <div class="key">U</div>
+            <div class="key">I</div>
+            <div class="key">O</div>
+            <div class="key">P</div>
+            <div class="key">Ü</div>
+        </div>
+        <div class="row">
+            <div class="key">A</div>
+            <div class="key">S</div>
+            <div class="key">D</div>
+            <div class="key">F</div>
+            <div class="key">G</div>
+            <div class="key">H</div>
+            <div class="key">J</div>
+            <div class="key">K</div>
+            <div class="key">L</div>
+            <div class="key">Ö</div>
+            <div class="key">Ä</div>
+        </div>
+        <div class="row">
+            <div class="special-key" style="flex: 2" data-action="shift"><span class="mdi mdi-apple-keyboard-shift"></span></div>
+            <div class="key">Y</div>
+            <div class="key">X</div>
+            <div class="key">C</div>
+            <div class="key">V</div>
+            <div class="key">B</div>
+            <div class="key">N</div>
+            <div class="key">M</div>
+            <div class="special-key" style="flex: 2" data-action="backspace"><span class="mdi mdi-backspace"></span></div>
+        </div>
+        <div class="row">
+            <div class="special-key" data-action="switch"><span class="mdi mdi-numeric"></span></div>
+            <div class="key">,</div>
+            <div class="special-key" data-action="close"><span class="mdi mdi-keyboard-close"></span></div>
+            <div class="special-key" style="flex: 5" data-action="space"><span class="mdi mdi-keyboard-space"></span></div>
+            <div class="key">.</div>
+            <div class="special-key" style="flex: 2" data-action="submit"><span class="mdi mdi-keyboard-return"></span></div>
+        </div>
+
+        <div class="row special">
+            <div class="key">1</div>
+            <div class="key">2</div>
+            <div class="key">3</div>
+            <div class="key">4</div>
+            <div class="key">5</div>
+            <div class="key">6</div>
+            <div class="key">7</div>
+            <div class="key">8</div>
+            <div class="key">9</div>
+            <div class="key">0</div>
+        </div>
+        <div class="row special">
+            <div class="key">@</div>
+            <div class="key">#</div>
+            <div class="key">$</div>
+            <div class="key">_</div>
+            <div class="key">&</div>
+            <div class="key">-</div>
+            <div class="key">+</div>
+            <div class="key">(</div>
+            <div class="key">)</div>
+            <div class="key">/</div>
+        </div>
+        <div class="row special">
+            <div class="key">=</div>
+            <div class="key">*</div>
+            <div class="key">"</div>
+            <div class="key">'</div>
+            <div class="key">:</div>
+            <div class="key">;</div>
+            <div class="key">!</div>
+            <div class="key">?</div>
+            <div class="special-key" style="flex: 2" data-action="backspace"><span class="mdi mdi-backspace"></span></div>
+        </div>
+        <div class="row special">
+            <div class="special-key" data-action="switch"><span class="mdi mdi-alphabetical"></span></div>
+            <div class="key">,</div>
+            <div class="special-key" style="flex: 5" data-action="space"><span class="mdi mdi-keyboard-space"></span></div>
+            <div class="key">.</div>
+            <div class="special-key" style="flex: 2" data-action="submit"><span class="mdi mdi-keyboard-return"></span></div>
+        </div>
+    </div>
+</div>

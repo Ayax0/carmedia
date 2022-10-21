@@ -1,0 +1,26 @@
+{
+    "name": "CarMedia-Keyboard",
+    "version": "1.0.0",
+    "description": "touch keyboard for carmedia",
+    "manifest_version": 3,
+    "author": "Simon Gander",
+    "icons": {
+        "16": "/icons/icon16.png",
+        "48": "/icons/icon48.png",
+        "128": "/icons/icon128.png"
+    },
+    "content_scripts": [
+        {
+            "run_at": "document_end",
+            "matches": ["https://*/*", "http://*/*"],
+            "js": ["content.js"],
+            "css": ["icons.css"]
+        }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": ["*.html", "*.css", "*.js", "fonts/*", "sounds/*"],
+            "matches": ["https://*/*", "http://*/*"]
+        }
+    ]
+}
