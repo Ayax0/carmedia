@@ -22,7 +22,8 @@ export default {
         activeAudioPlayer.api.instance
             .get("/shows/" + this.show_id)
             .then((res) => (this.show = res.data))
-            .then(() => console.log(this.show));
+            .then(() => console.log(this.show))
+            .catch((error) => console.log(error));
     },
     methods: {
         formatDuration(duration_ms) {

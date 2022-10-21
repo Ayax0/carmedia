@@ -19,7 +19,10 @@ export default {
     },
     mounted() {
         const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
-        activeAudioPlayer.api.instance.get("/playlists/" + this.playlist_id).then((res) => (this.playlist = res.data));
+        activeAudioPlayer.api.instance
+            .get("/playlists/" + this.playlist_id)
+            .then((res) => (this.playlist = res.data))
+            .catch((error) => console.log(error));
     },
     methods: {
         formatDuration(duration_ms) {
