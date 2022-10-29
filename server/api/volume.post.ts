@@ -1,8 +1,9 @@
 import alsa from "alsa-volume";
 
-const volumeRange = alsa.getVolumeRange("default", "Master");
-
 export default defineEventHandler(async (event) => {
+    if(process.env.NODE_ENV !== 'production') return { status: "ok" };
+
+    const volumeRange = alsa.getVolumeRange("default", "Master");
     const body = await readBody(event);
     if (!Number.isInteger(body.volume) || body.volume < 0 || body.volume > 100) {
         event.res.statusCode = 400;

@@ -7,6 +7,7 @@ export default {
     data() {
         return {
             colapse: false,
+            volume: 0,
         };
     },
     watch: {
@@ -17,8 +18,13 @@ export default {
             },
         },
         colapse(value, previous) {
-            if (value != previous) this.$emit("update:modelValue", value);
+            if (value != previous) 
+                this.$emit("update:modelValue", value);
         },
+        async volume(value, previous) {
+            console.log("update", value != previous)
+            if(value != previous) await $fetch("/api/volume", { method: "post", body: { volume: this.volume } });
+        }
     },
 };
 </script>
@@ -26,7 +32,7 @@ export default {
 <template>
     <div class="volume" :class="{ colapse }">
         <span v-ripple class="mdi mdi-volume-high" @click="colapse = !colapse"></span>
-        <vertical-slider />
+        <vertical-slider v-model="volume" />
     </div>
 </template>
 
