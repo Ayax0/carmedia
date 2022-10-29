@@ -7,6 +7,7 @@ export default {
     data() {
         return {
             colapse: false,
+            timeout: undefined,
             volume: 0,
         };
     },
@@ -18,14 +19,20 @@ export default {
             },
         },
         colapse(value, previous) {
-            if (value != previous) 
+            if (value != previous) {
                 this.$emit("update:modelValue", value);
+                if(this.timeout) clearTimeout(this.timeout);
+            }
+            if (previous == false && value == true)
+                this.timeout = setTimeout(() => this.colapse = false, 10000);
         },
         async volume(value, previous) {
-            console.log("update", value != previous)
             if(value != previous) await $fetch("/api/volume", { method: "post", body: { volume: this.volume } });
         }
     },
+    async mounted() {
+        this.volume = (await $fetch("/api/volume")).volume;
+    }
 };
 </script>
 
