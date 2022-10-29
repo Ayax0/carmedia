@@ -13,5 +13,11 @@ export default defineNuxtConfig({
             sourcemap: false,
         },
     },
-    modules: ["./modules/socket.server", "nuxtjs-mdi-font"],
+    modules: ["nuxtjs-mdi-font"],
+    serverHandlers: [
+        {
+            route: "/ws",
+            handler: "@/server-middleware/socket",
+        },
+    ],
 });

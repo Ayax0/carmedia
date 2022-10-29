@@ -21,6 +21,8 @@ export default {
     mounted() {
         carmedia.activeAudioPlayer?.subscribe((state) => this.updateState(state));
         if (carmedia.activeAudioPlayer?.player_state) this.updateState(carmedia.activeAudioPlayer?.player_state);
+
+        this.$socket.emit("message", "hallo welt");
     },
 };
 </script>
@@ -29,6 +31,7 @@ export default {
     <NuxtLayout name="index">
         <template #default>
             <NuxtChild />
+            <volume-slider />
         </template>
         <template #action>
             <vbutton icon="mdi-skip-previous" @click="activeAudioPlayer?.previousTrack()" />
