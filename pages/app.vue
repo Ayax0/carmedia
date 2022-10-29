@@ -31,7 +31,6 @@ export default {
         <template #header>
             <vbutton v-ripple :icon="current_app_icon" iconSize="1.5rem" height="100%" width="auto" @click="navigateHome">{{ current_app_name }}</vbutton>
             <div class="spacer"></div>
-            <Icon name="mdi:home" />
             <status-icon icon="mdi:bluetooth" width="2.5rem" />
             <status-icon icon="mdi:signal" width="2.5rem" />
         </template>
