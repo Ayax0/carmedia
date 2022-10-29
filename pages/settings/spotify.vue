@@ -15,15 +15,15 @@ export default {
         scope() {
             return [
                 "user-modify-playback-state",
+                "user-read-playback-position",
                 "user-read-playback-state",
                 "user-read-currently-playing",
                 "playlist-read-private",
                 "playlist-read-collaborative",
-                "app-remote-control",
                 "streaming",
+                "user-read-email",
                 "user-read-private",
                 "user-library-read",
-                "user-read-recently-played",
             ];
         },
         redirect_uri() {
@@ -104,6 +104,7 @@ export default {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    overflow: hidden;
     overflow-y: auto;
     padding: 2rem 2rem 5rem 2rem;
 

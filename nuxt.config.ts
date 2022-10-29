@@ -13,7 +13,7 @@ export default defineNuxtConfig({
             sourcemap: false,
         },
     },
-    modules: ["nuxtjs-mdi-font"],
+    modules: ["nuxt-icon"],
     serverHandlers: [
         {
             route: "/ws",

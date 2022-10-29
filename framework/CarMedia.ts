@@ -15,13 +15,15 @@ export default class CarMedia {
     }
 
     openApplication(app: Application) {
-        this.active_apps.forEach((app) => {
-            if (!app.persistent) {
-                if (app.onstop) app.onstop(this);
-            }
-        });
-        this.active_apps = this.active_apps.filter((app) => app.persistent);
-        this.active_apps.unshift(app);
+        if(!app.background) {
+            this.active_apps.forEach((app) => {
+                if (!app.persistent) {
+                    if (app.onstop) app.onstop(this);
+                }
+            });
+            this.active_apps = this.active_apps.filter((app) => app.persistent);
+            this.active_apps.unshift(app);
+        }
         if (app.onstart) app.onstart(this);
         if (app.path) navigateTo(app.path);
     }

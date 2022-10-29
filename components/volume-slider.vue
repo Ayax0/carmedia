@@ -3,12 +3,13 @@ export default {
     name: "VolumeSliderComponent",
     props: {
         modelValue: { type: Boolean, default: false },
+        volume: { type: Number, default: 0 },
     },
     data() {
         return {
             colapse: false,
             timeout: undefined,
-            volume: 0,
+            localVolume: 0,
         };
     },
     watch: {
@@ -18,6 +19,21 @@ export default {
                 this.colapse = value;
             },
         },
+        volume: {
+            immediate: true,
+            handler(value) {
+                this.localVolume = value;
+            }
+        },
+        localVolume(value, previous) {
+            if(value != previous) {
+                this.$emit("update:volume", value);
+                if(this.timeout) {
+                    clearTimeout(this.timeout);
+                    this.timeout = setTimeout(() => this.colapse = false, 10000);
+                }
+            }
+        },
         colapse(value, previous) {
             if (value != previous) {
                 this.$emit("update:modelValue", value);
@@ -26,20 +42,14 @@ export default {
             if (previous == false && value == true)
                 this.timeout = setTimeout(() => this.colapse = false, 10000);
         },
-        async volume(value, previous) {
-            if(value != previous) await $fetch("/api/volume", { method: "post", body: { volume: this.volume } });
-        }
     },
-    async mounted() {
-        this.volume = (await $fetch("/api/volume")).volume;
-    }
 };
 </script>
 
 <template>
     <div class="volume" :class="{ colapse }">
-        <span v-ripple class="mdi mdi-volume-high" @click="colapse = !colapse"></span>
-        <vertical-slider v-model="volume" />
+        <span><Icon v-ripple name="mdi:volume-high" @click="colapse = !colapse" /></span>
+        <vertical-slider v-model="localVolume" />
     </div>
 </template>
 
@@ -58,6 +68,7 @@ export default {
     flex-direction: column-reverse;
     overflow: hidden;
     transition: max-height ease-in-out 0.2s;
+    z-index: 1;
 
     span {
         width: 4rem;

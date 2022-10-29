@@ -25,7 +25,6 @@ export default {
     },
     watch: {
         async thumbnail(value) {
-            console.log("img", value);
             if (!value) return;
             const color = await this.getImageColor(value);
             this.color = `rgb(${color.r},${color.g},${color.b})`;

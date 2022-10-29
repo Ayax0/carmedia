@@ -11,17 +11,12 @@ export default {
             featured: undefined,
         };
     },
-    watch: {
-        shows(value) {
-            console.log(value);
-        },
-    },
     mounted() {
         if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
             const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
 
-            activeAudioPlayer.api.instance.get("/me/playlists").then((res) => (this.playlists = res.data));
-            activeAudioPlayer.api.instance.get("/me/shows").then((res) => (this.shows = res.data));
+            activeAudioPlayer.api.instance.get("/me/playlists?limit=50").then((res) => (this.playlists = res.data));
+            activeAudioPlayer.api.instance.get("/me/shows?limit=50").then((res) => (this.shows = res.data));
             activeAudioPlayer.api.instance.get("/browse/featured-playlists").then((res) => (this.featured = res.data));
         } else navigateTo("/app");
     },

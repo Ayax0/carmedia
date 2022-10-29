@@ -58,7 +58,7 @@ export default {
                 <tr>
                     <th>#</th>
                     <th>Titel</th>
-                    <th><span class="mdi mdi-clock-outline"></span></th>
+                    <th><Icon name="mdi:clock-outline" /></th>
                 </tr>
                 <tr v-for="(item, index) in playlist?.tracks?.items" v-ripple @click="playTrack(item.track)">
                     <td>{{ index + 1 }}</td>

@@ -18,10 +18,14 @@ export default {
     methods: {
         async login(account) {
             if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
-                const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
-                await activeAudioPlayer.linkAccount(account);
-                await activeAudioPlayer.connect();
-                await activeAudioPlayer.tranferPlayback();
+                try {
+                    const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+                    await activeAudioPlayer.linkAccount(account);
+                    await activeAudioPlayer.connect();
+                    activeAudioPlayer.tranferPlayback();
+                }catch(error) {
+                    console.error("spotify login error");
+                }
 
                 navigateTo("/spotify");
             } else navigateTo("/app");

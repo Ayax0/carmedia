@@ -7,6 +7,7 @@ export default class SpotifyPlayer extends AudioPlayer {
     player: Spotify.Player;
     account: SpotifyAccount;
     device: Spotify.WebPlaybackInstance;
+    activeDevice: boolean;
 
     constructor() {
         super();
@@ -17,12 +18,12 @@ export default class SpotifyPlayer extends AudioPlayer {
             this.player = new window.Spotify.Player({
                 name: store.get("general.display_name") || "CarMedia",
                 getOAuthToken: (cb) => cb(this.api.access_token),
-                volume: 1,
+                volume: 1
             });
 
             this.player.addListener("ready", (device) => (this.device = device));
             this.player.addListener("account_error", () => console.log("account error"));
-            this.player.addListener("authentication_error", () => console.log("auth error"));
+            this.player.addListener("authentication_error", (error) => console.log("auth error", error));
             this.player.addListener("autoplay_failed", () => console.log("autoplay error"));
             this.player.addListener("initialization_error", () => console.log("init error"));
             this.player.addListener("not_ready", () => console.log("not ready"));
@@ -42,6 +43,7 @@ export default class SpotifyPlayer extends AudioPlayer {
                     },
                     timestamp: Date.now(),
                 });
+                console.log(state)
             });
         };
 
@@ -73,7 +75,10 @@ export default class SpotifyPlayer extends AudioPlayer {
     }
 
     async tranferPlayback() {
-        const transfer = async (device) => await this.api.instance.put("/me/player", { device_ids: [device.device_id], play: false });
+        const transfer = (device) => 
+            this.api.instance.put("/me/player", { device_ids: [device.device_id], play: false })
+            .then(() => this.activeDevice = true)
+            .catch(() => this.activeDevice = false);
         if (this.device) await transfer(this.device);
         else this.player.addListener("ready", async (device) => transfer(device));
     }

@@ -22,7 +22,7 @@ export default {
 
 <template>
     <div v-ripple class="setting-category" :class="{ alt, active }" @click="click">
-        <span class="mdi" :class="icon" style="font-size: 2rem" />
+        <Icon :name="icon" size="2rem" />
         <div class="title">{{ title }}</div>
     </div>
 </template>

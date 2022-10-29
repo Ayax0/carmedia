@@ -33,13 +33,13 @@ export default {
             return `${minutes}:${seconds.toLocaleString("de-CH", { minimumIntegerDigits: 2 })}`;
         },
         playEpisode(track) {
-            if (!this.playlist) return;
+            if (!this.show) return;
             if (!track) return;
 
             const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
             activeAudioPlayer.api.instance
                 .put("/me/player/play", {
-                    context_uri: this.playlist.uri,
+                    context_uri: this.show.uri,
                     offset: { uri: track.uri },
                 })
                 .then(() => console.log("start playing track"))
@@ -54,95 +54,85 @@ export default {
 
 <template>
     <NuxtLayout name="spotify-item" :thumbnail="thumbnail" category="Podcast" :title="show?.name" :info="show?.publisher">
-        <div class="playlist-body">
-            <table>
-                <tr>
-                    <th>#</th>
-                    <th>Titel</th>
-                    <th><span class="mdi mdi-clock-outline"></span></th>
-                </tr>
-                <tr v-for="(item, index) in show?.tracks?.items" v-ripple @click="playEpisode(item.track)">
-                    <td>{{ index + 1 }}</td>
-                    <td>
-                        <div class="track-info">
-                            <img :src="item.track?.album?.images[0]?.url || ''" />
-                            <div class="title text-overflow">{{ item.track?.name }}</div>
-                            <div class="subtitle text-overflow">{{ item.track?.artists.map((artist) => artist.name)?.join(", ") }}</div>
+        <div class="show-body">
+            <div class="episode" v-for="episode in show?.episodes?.items">
+                <img :src="episode.images[0].url" />
+                <div class="episode-info">
+                    <div class="episode-title text-overflow">{{ episode.name }}</div>
+                    <div class="episode-description text-overflow">{{ episode.description }}</div>
+                    <div class="episode-status">
+                        <span v-ripple @click="playEpisode(episode)"><Icon name="mdi:play-circle" size="35px" style="color: white" /></span>
+                        <div v-if="episode.resume_point?.fully_played">
+                            Abgespielt
+                            <Icon name="mdi:check" size="22px" style="color: #1DB954" />
                         </div>
-                    </td>
-                    <td>{{ formatDuration(item.track?.duration_ms) }}</td>
-                </tr>
-            </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </NuxtLayout>
 </template>
 
 <style lang="scss" scoped>
-.playlist-body {
-    padding-bottom: 2rem;
+.show-body {
+    display: flex;
+    flex-direction: column;
 
-    table {
-        width: 100%;
-        border-spacing: 0;
-        padding: 0 2rem;
-        color: #ccc;
-
-        tr > :nth-child(1) {
-            text-align: center;
-        }
-
-        tr > :nth-child(2) {
-            text-align: left;
-            max-width: 80vw;
-        }
-
-        tr > :nth-child(3) {
-            text-align: right;
-        }
-
-        th,
-        td {
-            font-weight: 100;
-            font-size: 14px;
-            padding: 1rem 0.5rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        th {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 0.5rem;
-        }
-    }
-
-    .track-info {
+    .episode {
         display: grid;
-        grid-template-areas:
-            "image title"
-            "image subtitle";
-        grid-template-columns: 3rem calc(100% - 3rem);
-        grid-template-rows: 1.5rem 1.5rem;
+        grid-template-columns: 8rem auto;
+        grid-template-rows: 10rem;
+        padding: 0 1rem;
 
         img {
-            grid-area: image;
-            width: 3rem;
-            height: 3rem;
+            width: 6rem;
+            height: 6rem;
+            margin: auto;
+            border-radius: 10px;
         }
 
-        .title,
-        .subtitle {
+        .episode-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            justify-content: center;
+            height: 8rem;
+            margin: auto 0;
             padding: 0 1rem;
-            width: 100%;
-        }
 
-        .title {
-            font-size: 16px;
-            color: white;
-        }
+            .episode-title {
+                font-size: 16px;
+                font-weight: bold;
+                color: white;
+            }
 
-        .subtitle {
-            font-size: 13px;
+            .episode-description {
+                font-size: 14px;
+                font-weight: 100;
+                color: #ccc;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                white-space: unset;
+            }
+
+            .episode-status {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                font-size: 13px;
+                color: #ccc;
+
+                span {
+                    border-radius: 50%;
+                }
+
+                div {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+            }
         }
     }
 }

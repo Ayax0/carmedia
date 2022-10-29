@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <div class="status-icon" :style="{ width, height }"><span class="mdi" :class="icon" :style="{ 'font-size': iconSize }" /></div>
+    <div class="status-icon" :style="{ width, height }"><Icon :name="icon" :size="iconSize" /></div>
 </template>
 
 <style lang="scss" scoped>

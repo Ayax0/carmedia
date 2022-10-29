@@ -22,11 +22,11 @@ export default {
 <template>
     <div class="main">
         <div class="header">
-            <div class="spotify" @click="navigateTo('/app')"><span class="mdi mdi-apps" style="margin-left: -5px"></span></div>
+            <div class="spotify" @click="navigateTo('/app')"><Icon name="mdi:apps" style="margin-left: -5px" /></div>
             <div class="spacer"></div>
-            <div class="home-button" @click="navigateTo('/spotify')"><span class="mdi mdi-home"></span></div>
+            <div class="home-button" @click="navigateTo('/spotify')"><Icon name="mdi:home" /></div>
             <div class="search-input">
-                <span class="mdi mdi-magnify"></span>
+                <span><Icon name="mdi:magnify" /></span>
                 <input type="text" placeholder="Was möchtest du hören?" />
             </div>
             <div class="spacer"></div>

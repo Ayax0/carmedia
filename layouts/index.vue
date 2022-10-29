@@ -44,7 +44,9 @@ export default {
         </div>
         <div class="timeline"><div class="thumb" :style="{ '--prog': progress + '%' }" /></div>
         <div class="control">
-            <div class="thumbnail" :style="{ 'background-image': thumbnail ? `url(${thumbnail})` : '' }"></div>
+            <div class="thumbnail" :style="{ 'background-image': thumbnail ? `url(${thumbnail})` : '' }">
+                <slot name="thumbnail" />
+            </div>
             <div class="info">
                 <div class="song text-overflow">{{ song }}</div>
                 <div class="artist text-overflow">{{ artist }}</div>

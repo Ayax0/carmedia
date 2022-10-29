@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-    <div v-ripple class="button" :style="{ width, height }"><span class="mdi" :class="icon" :style="{ 'font-size': iconSize }" /></div>
+    <div v-ripple class="button" :style="{ width, height }"><Icon :name="icon" :size="iconSize" /><slot /></div>
 </template>
 
 <style lang="scss" scoped>
@@ -19,5 +19,6 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 0.5rem;
 }
 </style>
