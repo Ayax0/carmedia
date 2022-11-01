@@ -112,7 +112,7 @@ gpu_mem=64
 remove `spash`
 add `quiet` after rootwait
 
-# setup radio app
+# setup carmedia app
 `sudo git clone https://github.com/Ayax0/carmedia.git`
 
 `sudo git clone https://github.com/Ayax0/carmedia-keyboard.git`
