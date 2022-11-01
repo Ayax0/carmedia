@@ -12,8 +12,13 @@ export default defineEventHandler(async (event) => {
     if(process.env.NODE_ENV !== 'production') {
         volume = body.volume;
     }else {
-        const volumeRange = alsa.getVolumeRange("default", "Master");
-        alsa.setVolume("default", "Master", volumeRange.min + ((volumeRange.max - volumeRange.min) / 100) * body.volume);
+        try {
+            const volumeRange = alsa.getVolumeRange("default", "Master");
+            alsa.setVolume("default", "Master", volumeRange.min + ((volumeRange.max - volumeRange.min) / 100) * body.volume);
+        } catch(error) {
+            console.error("ALSA error");
+            console.error(error);
+        }
     }
 
     return { status: "ok" };

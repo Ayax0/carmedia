@@ -5,7 +5,12 @@ export default defineEventHandler((event) => {
     if(process.env.NODE_ENV !== 'production') {
         return { volume };
     } else {
-        const volumeRange = alsa.getVolumeRange("default", "Master");
-        return { volume: Math.round(alsa.getVolume("default", "Master") / ((volumeRange.max - volumeRange.min) / 100)) };
+        try {
+            const volumeRange = alsa.getVolumeRange("default", "Master");
+            return { volume: Math.round(alsa.getVolume("default", "Master") / ((volumeRange.max - volumeRange.min) / 100)) };
+        } catch(error) {
+            console.error("ALSA error");
+            console.error(error);
+        }
     }
 });
