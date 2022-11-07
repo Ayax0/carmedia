@@ -25,7 +25,7 @@ export default {
 
 <template>
     <div class="spotify-main">
-        <template v-if="playlists">
+        <template v-if="playlists && playlists.items && playlists.items.length > 0">
             <div class="title">Deine Playlists</div>
             <div class="category">
                 <spotify-tile
@@ -37,7 +37,7 @@ export default {
                 />
             </div>
         </template>
-        <template v-if="shows">
+        <template v-if="shows && shows.items && shows.items.length > 0">
             <div class="title">Deine Shows</div>
             <div class="category">
                 <spotify-tile
@@ -49,7 +49,7 @@ export default {
                 />
             </div>
         </template>
-        <template v-if="featured && featured.playlists">
+        <template v-if="featured && featured.playlists && featured.playlists.items && featured.playlists.items.length > 0">
             <div class="title">Von Spotify empfohlen</div>
             <div class="category">
                 <spotify-tile

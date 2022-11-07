@@ -43,7 +43,6 @@ export default class SpotifyPlayer extends AudioPlayer {
                     },
                     timestamp: Date.now(),
                 });
-                console.log(state)
             });
         };
 
@@ -94,6 +93,9 @@ export default class SpotifyPlayer extends AudioPlayer {
     }
     previousTrack() {
         return this.player.previousTrack();
+    }
+    seek(ms) {
+        return this.player.seek(ms);
     }
 }
 

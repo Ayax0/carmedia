@@ -7,13 +7,76 @@ export default {
     data() {
         return {
             account: undefined,
+            thumbnail: undefined,
+            song: "-",
+            artist: "Unbekannter Interpret",
+            progress: 0,
+            trackPosition: "0:00",
+            trackLength: "0:00",
+            paused: true,
         };
+    },
+    methods: {
+        updateState(state) {
+            this.thumbnail = state.track?.thumbnail;
+            this.song = state.track?.name || "-";
+            this.artist = state.track?.artists?.join(", ") || "Unbekannter Interpret";
+            this.paused = state.paused;
+            this.trackLength = this.formatMillis(state.track?.length);
+        },
+        previous() {
+            carmedia.activeAudioPlayer?.previousTrack();
+        },
+        pause() {
+            carmedia.activeAudioPlayer?.pause();
+        },
+        play() {
+            carmedia.activeAudioPlayer?.play();
+        },
+        next() {
+            carmedia.activeAudioPlayer?.nextTrack();
+        },
+        seek(event) {
+            if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
+                const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+
+                if(!activeAudioPlayer) return;
+                if(!activeAudioPlayer.player_state) return;
+                if(!activeAudioPlayer.player_state.track) return;
+                
+                const trackLength = activeAudioPlayer.player_state.track?.length;
+                activeAudioPlayer.seek((trackLength / event.target.clientWidth) * event.offsetX);
+            }
+        },
+        formatMillis(millis) {
+            if(!millis) millis = 0;
+            const positionMinutes = Math.floor(millis / 60000);
+            const positionSeconds = Math.round((millis % 60000) / 1000);
+            return `${positionMinutes}:${positionSeconds.toLocaleString("de-CH", { minimumIntegerDigits: 2, useGrouping: false })}`;
+        }
     },
     async mounted() {
         if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
             const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
             this.account = activeAudioPlayer.account;
-            activeAudioPlayer.api.instance.get("/me/player/recently-played?limit=4").then((res) => (this.recently_played = res.data));
+
+            activeAudioPlayer.subscribe((state) => this.updateState(state));
+            if (activeAudioPlayer.player_state) this.updateState(activeAudioPlayer.player_state);
+
+            setInterval(() => {
+                if (!activeAudioPlayer) return;
+                if (!activeAudioPlayer.player_state) return;
+
+                const paused = activeAudioPlayer.player_state.paused;
+                const trackLength = activeAudioPlayer.player_state.track?.length;
+                const lastPosition = activeAudioPlayer.player_state.position;
+                const timeDifference = Date.now() - activeAudioPlayer.player_state.timestamp;
+
+                if (!paused) {
+                    this.trackPosition = this.formatMillis(lastPosition + timeDifference);
+                    this.progress = (100 / trackLength) * (lastPosition + timeDifference);
+                }
+            }, 1000);
         } else navigateTo("/app");
     },
 };
@@ -38,6 +101,29 @@ export default {
         <div class="content">
             <slot />
         </div>
+        <div class="control">
+            <div class="thumbnail" :style="{ 'background-image': thumbnail ? `url(${thumbnail})` : '' }" />
+            <div class="info">
+                <div class="song text-overflow">{{ song }}</div>
+                <div class="artist text-overflow">{{ artist }}</div>
+            </div>
+            <div class="player">
+                <div v-ripple class="button" @click="previous"><Icon name="mdi:skip-previous" /></div>
+                <div v-ripple class="button"  @click="paused ? play() : pause()">
+                    <Icon v-if="paused" name="mdi:play-circle" />
+                    <Icon v-else name="mdi:pause-circle" />
+                </div>
+                <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
+            </div>
+            <div class="action">
+                <div v-ripple class="button"><Icon name="mdi:cast-audio" /></div>
+            </div>
+            <div class="progress" :style="{ '--player-progress': `${progress}%` }">
+                <div>{{ trackPosition }}</div>
+                <div class="slider" @click="seek"><div class="track" /></div>
+                <div>{{ trackLength }}</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -47,7 +133,7 @@ export default {
     height: 100vh;
     overflow: hidden;
     display: grid;
-    grid-template-rows: 4rem calc(100% - 4rem);
+    grid-template-rows: 4rem calc(100% - 10rem) 6rem;
     grid-template-columns: 100vw;
     background: #121212;
 
@@ -125,6 +211,106 @@ export default {
             p {
                 font-size: 20px;
                 font-weight: 100;
+            }
+        }
+    }
+
+    .control {
+        background: #181818;
+        border-top: 1px solid #282828;
+        display: grid;
+        grid-template-areas: 
+            "thumbnail info     player   action"
+            "thumbnail progress progress progress";
+        grid-template-columns: 5rem calc(50% - 11rem) 12rem calc(50% - 6rem);
+        grid-template-rows: 3rem 1rem;
+        padding: 1rem;
+
+        .thumbnail {
+            grid-area: thumbnail;
+            background-repeat: no-repeat;
+            background-size: contain;
+            width: 4rem;
+            height: 4rem;
+        }
+
+        .info {
+            grid-area: info;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .song {
+                font-size: 14px;
+            }
+            .artist {
+                font-size: 12px;
+                font-weight: lighter;
+                color: #ccc;
+            }
+        }
+
+        .player {
+            grid-area: player;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            margin-top: -1rem;
+
+            .button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: calc(100% - 1.5rem);
+                padding: 0.5rem;
+                padding-top: 1rem;
+            }
+        }
+
+        .action {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            font-size: 20px;
+            margin-top: -1rem;
+
+            .button {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: calc(100% - 1.5rem);
+                padding: 0.5rem;
+                padding-top: 1rem;
+            }
+        }
+
+        .progress {
+            grid-area: progress;
+            display: flex;
+            font-size: 10px;
+            font-weight: lighter;
+            align-items: center;
+            gap: 0.5rem;
+
+            .slider {
+                position: relative;
+                flex: 1;
+                height: 4px;
+                border-radius: 2px;
+                background: #5E5E5E;
+
+                .track {
+                    position: absolute;
+                    left: 0;
+                    top: 0;
+                    height: 4px;
+                    width: var(--player-progress);
+                    background: white;
+                    border-radius: 2px;
+                    transition: width 1s ease;
+                }
             }
         }
     }
