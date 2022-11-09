@@ -85,7 +85,7 @@ export default {
     .control {
         background: $background;
         display: grid;
-        grid-template-columns: 8rem auto 25rem;
+        grid-template-columns: 8rem calc(100vw - 8rem - 25rem) 25rem;
 
         .thumbnail {
             margin: 1rem;

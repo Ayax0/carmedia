@@ -9,6 +9,10 @@ export default {
         category: { type: String, default: undefined },
         title: { type: String, default: "Ungekannter Title" },
         info: { type: String, default: undefined },
+        icon: { type: String, default: undefined },
+        thumbnailColor: { type: String, default: "transparent" },
+        tileColor: { type: String, default: "black" },
+        iconColor: { type: String, default: "white" }
     },
     data() {
         return {
@@ -29,6 +33,13 @@ export default {
             const color = await this.getImageColor(value);
             this.color = `rgb(${color.r},${color.g},${color.b})`;
         },
+        tileColor: {
+            immediate: true,
+            handler(value) {
+                if(value) this.color = value;
+                console.log(this.color);
+            }
+        }
     },
 };
 </script>
@@ -36,7 +47,10 @@ export default {
 <template>
     <div class="spotify-item" :style="{ '--color-primary': this.color }">
         <div class="header">
-            <div class="thumbnail"><img :src="thumbnail?.url" /></div>
+            <div class="thumbnail" :style="{ background: thumbnailColor, color: iconColor }">
+                <img v-if="thumbnail" :src="thumbnail?.url" />
+                <Icon v-if="icon" :name="icon" />
+            </div>
             <div class="metadata">
                 <div v-if="category" class="type">{{ category }}</div>
                 <div class="title text-overflow" :style="{ 'font-size': title_size }">{{ title }}</div>
@@ -75,6 +89,10 @@ export default {
             width: 100%;
             height: 100%;
             box-shadow: $shadow-light;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 64px;
 
             img {
                 width: 100%;

@@ -5,13 +5,19 @@ export default {
         thumbnail: { type: String, default: "" },
         title: { type: String, default: "Unbekannt" },
         subtitle: { type: String, default: undefined },
+        color: { type: String, default: "transparent" },
+        icon: { type: String, default: undefined },
+        iconColor: { type: String, default: "white" },
     },
 };
 </script>
 
 <template>
     <div class="tile">
-        <img :src="thumbnail" />
+        <div class="image-wrapper" :style="{ background: color, color: iconColor }">
+            <img v-if="thumbnail" :src="thumbnail" />
+            <Icon v-if="icon" :name="icon" />
+        </div>
         <div class="title text-overflow">{{ title }}</div>
         <div v-if="subtitle" class="subtitle text-overflow">{{ subtitle }}</div>
     </div>
@@ -27,12 +33,21 @@ export default {
     background: #181818;
     margin-bottom: 4rem;
 
-    img {
+    .image-wrapper {
         width: 8rem;
         height: 8rem;
-        border-radius: 8px;
         margin-bottom: 1rem;
-        box-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+        border-radius: 8px;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 64px;
+
+        img {
+            width: 100%;
+            box-shadow: 0 8px 24px rgb(0 0 0 / 50%);
+        }
     }
 
     .title {
