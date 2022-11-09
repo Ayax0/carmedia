@@ -20,6 +20,7 @@ export default {
 <style lang="scss" scoped>
 .tile {
     min-width: 8rem;
+    max-width: 8rem;
     border-radius: 8px;
     padding: 1rem;
     overflow: hidden;
@@ -27,7 +28,8 @@ export default {
     margin-bottom: 4rem;
 
     img {
-        width: 100%;
+        width: 8rem;
+        height: 8rem;
         border-radius: 8px;
         margin-bottom: 1rem;
         box-shadow: 0 8px 24px rgb(0 0 0 / 50%);

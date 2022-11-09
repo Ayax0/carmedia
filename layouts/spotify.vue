@@ -116,7 +116,12 @@ export default {
                 <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
             </div>
             <div class="action">
-                <div v-ripple class="button"><Icon name="mdi:cast-audio" /></div>
+                <div v-ripple class="button">
+                    <Icon name="mdi:cast-audio" />
+                    <div class="dialog">
+                        <div>Test</div>
+                    </div>
+                </div>
             </div>
             <div class="progress" :style="{ '--player-progress': `${progress}%` }">
                 <div>{{ trackPosition }}</div>
@@ -225,6 +230,7 @@ export default {
         grid-template-columns: 5rem calc(50% - 11rem) 12rem calc(50% - 6rem);
         grid-template-rows: 3rem 1rem;
         padding: 1rem;
+        z-index: 10;
 
         .thumbnail {
             grid-area: thumbnail;
@@ -277,12 +283,40 @@ export default {
             margin-top: -1rem;
 
             .button {
+                position: relative;
                 display: flex;
                 justify-content: center;
                 align-items: center;
                 height: calc(100% - 1.5rem);
                 padding: 0.5rem;
                 padding-top: 1rem;
+
+                .dialog {
+                    width: 200px;
+                    min-height: 2rem;
+                    max-height: 2rem;
+                    background: #282828;
+                    box-shadow: $shadow;
+                    position: absolute;
+                    bottom: calc(100% + 15px);
+                    right: 0;
+                    z-index: 100;
+                    border-radius: 5px;
+                    padding: 5px;
+                    display: none;
+
+                    &::after {
+                        content: "";
+                        position: absolute;
+                        background: #282828;
+                        top: calc(100% - 5px);
+                        right: 10px;
+                        height: 10px;
+                        width: 10px;
+                        transform: rotate(45deg);
+                        z-index: 99;
+                    }
+                }
             }
         }
 
