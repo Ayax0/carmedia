@@ -9,13 +9,7 @@ export default {
             playlists: undefined,
             shows: undefined,
             featured: undefined,
-            liked: undefined,
         };
-    },
-    watch: {
-        liked(value) {
-            console.log(value);
-        }
     },
     mounted() {
         if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
@@ -24,7 +18,6 @@ export default {
             activeAudioPlayer.api.instance.get("/me/playlists?limit=50").then((res) => (this.playlists = res.data));
             activeAudioPlayer.api.instance.get("/me/shows?limit=50").then((res) => (this.shows = res.data));
             activeAudioPlayer.api.instance.get("/browse/featured-playlists").then((res) => (this.featured = res.data));
-            activeAudioPlayer.api.instance.get("/me/tracks?limit=50").then((res) => this.liked = res.data);
         } else navigateTo("/app");
     },
 };
