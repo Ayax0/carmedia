@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
             latest: current_version == latest_version
         }
     }catch(error) {
+        console.log(error);
         event.res.statusCode = 500;
         return "server error";
     }
