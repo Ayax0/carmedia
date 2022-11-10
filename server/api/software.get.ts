@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
         await git.pull();
 
         const root = process.env.NODE_ENV == "production" ? path.join(process.cwd(), "../", "../") : path.join(process.cwd());
+        console.log(root);
 
         const current_version = fs.readFileSync(path.join(root, "version.txt")).toString();
         const latest_version = await simpleGit(process.cwd()).revparse("HEAD");
