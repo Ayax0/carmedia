@@ -3,7 +3,7 @@ import { exec } from "child_process";
 export default defineEventHandler(async (event) => {
     try {
         await new Promise((resolve, reject) => {
-            exec("cd ~/carmedia && npm i && npm i --save-dev && npm run build", (error, stdout) => {
+            exec("cd ~/carmedia && sudo npm i && sudo npm i --save-dev && sudo npm run build", (error, stdout) => {
                 if(error) reject(error);
                 else resolve(stdout);
             });
