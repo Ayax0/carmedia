@@ -43,7 +43,7 @@ export default {
         justify-content: center;
         align-items: center;
         font-size: 64px;
-
+        
         img {
             width: 100%;
             box-shadow: 0 8px 24px rgb(0 0 0 / 50%);

@@ -29,7 +29,15 @@ export default {
 <template>
     <NuxtLayout name="app">
         <template #header>
-            <vbutton v-ripple :icon="current_app_icon" iconSize="1.5rem" height="100%" width="auto" @click="navigateHome">{{ current_app_name }}</vbutton>
+            <vbutton 
+                v-ripple 
+                :icon="current_app_icon" 
+                iconSize="1.5rem" 
+                height="100%" 
+                width="auto" 
+                style="padding-left: 0.5rem" 
+                @click="navigateHome"
+            >{{ current_app_name }}</vbutton>
             <div class="spacer"></div>
             <status-icon icon="mdi:bluetooth" width="2.5rem" />
             <status-icon icon="mdi:signal" width="2.5rem" />

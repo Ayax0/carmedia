@@ -74,7 +74,7 @@ export default {
 .spotify-main {
     height: 100%;
     overflow-y: auto;
-    padding: 2rem 0;
+    padding: 1.5rem 0;
 
     &::-webkit-scrollbar {
         display: none;

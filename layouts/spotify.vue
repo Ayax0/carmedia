@@ -116,17 +116,12 @@ export default {
                 <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
             </div>
             <div class="action">
-                <div v-ripple class="button">
-                    <Icon name="mdi:cast-audio" />
-                    <div class="dialog">
-                        <div>Test</div>
-                    </div>
-                </div>
+                <div v-ripple class="button"><Icon name="mdi:cast-audio" /></div>
             </div>
             <div class="progress" :style="{ '--player-progress': `${progress}%` }">
-                <div>{{ trackPosition }}</div>
+                <div style="text-align: start">{{ trackPosition }}</div>
                 <div class="slider" @click="seek"><div class="track" /></div>
-                <div>{{ trackLength }}</div>
+                <div style="text-align: end">{{ trackLength }}</div>
             </div>
         </div>
     </div>
@@ -138,7 +133,7 @@ export default {
     height: 100vh;
     overflow: hidden;
     display: grid;
-    grid-template-rows: 4rem calc(100% - 10rem) 6rem;
+    grid-template-rows: 4rem calc(100% - 11rem) 7rem;
     grid-template-columns: 100vw;
     background: #121212;
 
@@ -227,8 +222,8 @@ export default {
         grid-template-areas: 
             "thumbnail info     player   action"
             "thumbnail progress progress progress";
-        grid-template-columns: 5rem calc(50% - 11rem) 12rem calc(50% - 6rem);
-        grid-template-rows: 3rem 1rem;
+        grid-template-columns: 6rem calc(50% - 12rem) 12rem calc(50% - 6rem);
+        grid-template-rows: 4rem 1rem;
         padding: 1rem;
         z-index: 10;
 
@@ -236,8 +231,8 @@ export default {
             grid-area: thumbnail;
             background-repeat: no-repeat;
             background-size: contain;
-            width: 4rem;
-            height: 4rem;
+            width: 5rem;
+            height: 5rem;
         }
 
         .info {
@@ -248,10 +243,10 @@ export default {
             justify-content: center;
 
             .song {
-                font-size: 14px;
+                font-size: 16px;
             }
             .artist {
-                font-size: 12px;
+                font-size: 14px;
                 font-weight: lighter;
                 color: #ccc;
             }
@@ -262,7 +257,7 @@ export default {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px;
+            font-size: 45px;
             margin-top: -1rem;
 
             .button {
@@ -279,51 +274,24 @@ export default {
             display: flex;
             justify-content: flex-end;
             align-items: center;
-            font-size: 20px;
+            font-size: 25px;
             margin-top: -1rem;
+            margin-right: -1rem;
 
             .button {
                 position: relative;
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                height: calc(100% - 1.5rem);
-                padding: 0.5rem;
-                padding-top: 1rem;
-
-                .dialog {
-                    width: 200px;
-                    min-height: 2rem;
-                    max-height: 2rem;
-                    background: #282828;
-                    box-shadow: $shadow;
-                    position: absolute;
-                    bottom: calc(100% + 15px);
-                    right: 0;
-                    z-index: 100;
-                    border-radius: 5px;
-                    padding: 5px;
-                    display: none;
-
-                    &::after {
-                        content: "";
-                        position: absolute;
-                        background: #282828;
-                        top: calc(100% - 5px);
-                        right: 10px;
-                        height: 10px;
-                        width: 10px;
-                        transform: rotate(45deg);
-                        z-index: 99;
-                    }
-                }
+                height: calc(100% - 2rem);
+                padding: 1rem;
             }
         }
 
         .progress {
             grid-area: progress;
             display: flex;
-            font-size: 10px;
+            font-size: 12px;
             font-weight: lighter;
             align-items: center;
             gap: 0.5rem;
@@ -331,20 +299,24 @@ export default {
             .slider {
                 position: relative;
                 flex: 1;
-                height: 4px;
-                border-radius: 2px;
+                height: 5px;
+                border-radius: 2.5px;
                 background: #5E5E5E;
 
                 .track {
                     position: absolute;
                     left: 0;
                     top: 0;
-                    height: 4px;
+                    height: 5px;
                     width: var(--player-progress);
                     background: white;
-                    border-radius: 2px;
+                    border-radius: 2.5px;
                     transition: width 1s ease;
                 }
+            }
+
+            div {
+                min-width: 2.5rem;
             }
         }
     }
