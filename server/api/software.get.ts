@@ -4,11 +4,11 @@ import path from "path";
 
 export default defineEventHandler(async (event) => {
     try {
-        const git = simpleGit(process.cwd());
+        const git = simpleGit("~/carmedia");
         await git.pull();
 
-        const current_version = fs.readFileSync(path.join(process.cwd(), "version.txt")).toString();
-        const latest_version = await simpleGit(process.cwd()).revparse("HEAD");
+        const current_version = fs.readFileSync(path.join("~/carmedia", "version.txt")).toString();
+        const latest_version = await git.revparse("HEAD");
 
         return {
             current_version,
