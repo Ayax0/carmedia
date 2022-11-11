@@ -15,6 +15,7 @@ export default defineEventHandler(async (event) => {
         if(process.env.NODE_ENV == "production") await exec("sudo reboot");
         return "ok";
     } catch (error) {
+        console.log(error);
         event.res.statusCode = 500;
         return "server error";
     }
