@@ -5,19 +5,9 @@ export default {
     name: "GeneralSettingsPage",
     data() {
         return {
-            display_name: null,
-            default_volume: 20,
             version: null,
             updating: false,
         };
-    },
-    watch: {
-        display_name(value) {
-            store.set("general.display_name", value);
-        },
-        default_volume(value) {
-            store.set("general.default_volume", value);
-        }
     },
     methods: {
         async update() {
@@ -29,22 +19,58 @@ export default {
         }
     },
     async mounted() {
-        this.display_name = store.get("general.display_name");
-        this.default_volume = store.get("general.default_volume") || 20;
-        $fetch("/api/software")
-            .then((data) => this.version = data)
-            .catch(() => console.warn("cant fetch version"));
+        // $fetch("/api/software")
+        //     .then((data) => this.version = data)
+        //     .catch(() => console.warn("cant fetch version"));
     },
 };
 </script>
 
+<script setup>
+import { Setting } from "@/utils/settings";
+
+var display_name = new Setting("general.display_name");
+var default_volume = new Setting("general.default_volume", 20);
+var branch = new Setting("general.software_branch", "origin/master");
+
+const { data: branches } = await useFetch("/api/software/branch");
+
+const software_update = { pending: false, error: false };
+
+async function updateSoftware() {
+    if(software_update.pending) return;
+
+    software_update.pending = true;
+    $fetch("/api/software/update", { method: "POST", body: { branch: branch.value } })
+    .then(() => {
+        software_update.pending = false;
+        software_update.error = false;
+    })
+    .catch(() => {
+        software_update.pending = false;
+        software_update.error = true;
+    })
+}
+</script>
+
 <template>
     <div class="main">
-        <vtextfield v-model="display_name" title="Anzeigename" />
+        <vtextfield v-model="display_name.value" title="Anzeigename" />
         <div class="title">Startlautstärke</div>
-        <horizontal-slider v-model="default_volume" />
+        <horizontal-slider v-model="default_volume.value" />
         <div class="title">Software</div>
-        <template v-if="version">
+        <template v-if="branches">
+            <vselect v-model="branch.value" :items="branches.all" />
+            <div v-if="branches.version == branches.branches[branch.value].commit" class="version-latest">
+                <Icon name="mdi:check-circle" color="#1ED760" />
+                <div>Die Software ist auf dem aktuellsten Stand</div>
+            </div>
+            <div v-else class="version-update" @click="updateSoftware">
+                <div v-if="software_update.pending"><loader size="16px" weight="2px" style="margin-top: -3px" />Bitte warten...</div>
+                <div v-else>Update</div>
+            </div>
+        </template>
+        <!-- <template v-if="version">
             <div v-if="version.latest" class="version-latest">
                 <Icon name="mdi:check-circle" color="#1ED760" />
                 <div>Die Software ist auf dem aktuellsten Stand</div>
@@ -56,7 +82,7 @@ export default {
         </template>
         <template v-else>
             <div class="version-check"><loader size="16px" weight="2px" />Version wird überprüft...</div>
-        </template>
+        </template> -->
     </div>
 </template>
 
@@ -70,13 +96,13 @@ export default {
 
     .title {
         margin-top: 2rem;
+        margin-bottom: -0.5rem;
     }
 
     .version-latest {
         font-weight: lighter;
         font-size: 20px;
         color: rgb(180, 180, 180);
-        margin-top: -0.5rem;
         display: flex;
         gap: 5px;
         align-items: center;
@@ -92,7 +118,6 @@ export default {
         margin-right: auto;
         border-radius: 5px;
         font-weight: lighter;
-        margin-top: -0.5rem;
         border: 2px solid $primary;
         background: rgba(20,20,20,0.5);
 
