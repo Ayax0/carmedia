@@ -17,6 +17,7 @@ export default defineEventHandler(async (event) => {
         const git = simpleGit(path.dirname(url.fileURLToPath(import.meta.url)));
         const gitRoot = await git.revparse(["--show-toplevel"]);
 
+        await git.checkout(branch);
         await git.pull(origin, branch);
 
         await exec("cd " + gitRoot);
