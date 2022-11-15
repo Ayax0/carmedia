@@ -12,19 +12,19 @@ export default defineEventHandler(async (event) => {
     }
 
     try {
-        // const [origin,branch] = body.branch.split("/");
+        const [origin,branch] = body.branch.split("/");
 
-        // const git = simpleGit(path.dirname(url.fileURLToPath(import.meta.url)));
-        // const gitRoot = await git.revparse(["--show-toplevel"]);
+        const git = simpleGit(path.dirname(url.fileURLToPath(import.meta.url)));
+        const gitRoot = await git.revparse(["--show-toplevel"]);
 
-        // await git.pull(origin, branch);
+        await git.pull(origin, branch);
 
-        // await exec("cd " + gitRoot);
-        // await exec("sudo npm i");
-        // await exec("sudo npm i --save-dev");
-        // await exec("sudo npm run build");
+        await exec("cd " + gitRoot);
+        await exec("sudo npm i");
+        await exec("sudo npm i --save-dev");
+        await exec("sudo npm run build");
 
-        // if(process.env.NODE_ENV == "production") await exec("sudo reboot");
+        if(process.env.NODE_ENV == "production") await exec("sudo reboot");
         console.log("update");
         return "ok";
     } catch (error) {
