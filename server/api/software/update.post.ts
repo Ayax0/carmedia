@@ -20,10 +20,7 @@ export default defineEventHandler(async (event) => {
         await git.checkout(branch);
         await git.pull(origin, branch);
 
-        await exec("cd " + gitRoot);
-        await exec("sudo npm i");
-        await exec("sudo npm i --save-dev");
-        await exec("sudo npm run build");
+        await exec("cd " + gitRoot + " && sudo npm i && sudo npm i --save-dev && sudo npm run build");
 
         if(process.env.NODE_ENV == "production") await exec("sudo reboot");
         return "ok";
