@@ -35,20 +35,20 @@ var branch = ref(new Setting("general.software_branch", "origin/master"));
 
 const { data: branches } = await useFetch("/api/software/branch");
 
-const software_update = { pending: false, error: false };
+const software_update = ref({ pending: false, error: false });
 
 async function updateSoftware() {
-    if(software_update.pending) return;
+    if(software_update.value.pending) return;
 
-    software_update.pending = true;
+    software_update.value.pending = true;
     $fetch("/api/software/update", { method: "POST", body: { branch: branch.value.value } })
     .then(() => {
-        software_update.pending = false;
-        software_update.error = false;
+        software_update.value.pending = false;
+        software_update.value.error = false;
     })
     .catch(() => {
-        software_update.pending = false;
-        software_update.error = true;
+        software_update.value.pending = false;
+        software_update.value.error = true;
     })
 }
 </script>
