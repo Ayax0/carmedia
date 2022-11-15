@@ -1,31 +1,3 @@
-<script>
-import store from "store-js";
-
-export default {
-    name: "GeneralSettingsPage",
-    data() {
-        return {
-            version: null,
-            updating: false,
-        };
-    },
-    methods: {
-        async update() {
-            if(this.updating) return;
-            this.updating = true;
-            await $fetch("/api/software", { method: "PATCH" });
-            this.updating = false;
-            $fetch("/api/software").then((data) => this.version = data);
-        }
-    },
-    async mounted() {
-        // $fetch("/api/software")
-        //     .then((data) => this.version = data)
-        //     .catch(() => console.warn("cant fetch version"));
-    },
-};
-</script>
-
 <script setup>
 import { Setting } from "@/utils/settings";
 

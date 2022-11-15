@@ -25,7 +25,6 @@ export default defineEventHandler(async (event) => {
         await exec("sudo npm run build");
 
         if(process.env.NODE_ENV == "production") await exec("sudo reboot");
-        console.log("update");
         return "ok";
     } catch (error) {
         console.log(error);
