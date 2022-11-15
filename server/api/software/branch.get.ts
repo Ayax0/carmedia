@@ -7,6 +7,7 @@ export default defineEventHandler(async (event) => {
     console.log(path.dirname(url.fileURLToPath(import.meta.url)));
     const git = simpleGit(path.dirname(url.fileURLToPath(import.meta.url)));
     const gitRoot = await git.revparse(["--show-toplevel"]);
+    console.log(gitRoot);
     const current_version = fs.readFileSync(path.join(gitRoot, "version.txt")).toString();
     
     var response = {
