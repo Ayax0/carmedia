@@ -29,9 +29,9 @@ export default {
 <script setup>
 import { Setting } from "@/utils/settings";
 
-var display_name = new Setting("general.display_name");
-var default_volume = new Setting("general.default_volume", 20);
-var branch = new Setting("general.software_branch", "origin/master");
+var display_name = ref(new Setting("general.display_name"));
+var default_volume = ref(new Setting("general.default_volume", 20));
+var branch = ref(new Setting("general.software_branch", "origin/master"));
 
 const { data: branches } = await useFetch("/api/software/branch");
 
@@ -59,7 +59,7 @@ async function updateSoftware() {
         <div class="title">Startlautstärke</div>
         <horizontal-slider v-model="default_volume.value" />
         <div class="title">Software</div>
-        <template v-if="branches">
+        <ClientOnly v-if="branches">
             <vselect v-model="branch.value" :items="branches.all" />
             <div v-if="branches.version == branches.branches[branch.value].commit" class="version-latest">
                 <Icon name="mdi:check-circle" color="#1ED760" />
@@ -69,20 +69,7 @@ async function updateSoftware() {
                 <div v-if="software_update.pending"><loader size="16px" weight="2px" style="margin-top: -3px" />Bitte warten...</div>
                 <div v-else>Update</div>
             </div>
-        </template>
-        <!-- <template v-if="version">
-            <div v-if="version.latest" class="version-latest">
-                <Icon name="mdi:check-circle" color="#1ED760" />
-                <div>Die Software ist auf dem aktuellsten Stand</div>
-            </div>
-            <div v-else class="version-update" @click="update">
-                <div v-if="!updating">Update</div>
-                <div v-else><loader size="16px" weight="2px" style="margin-top: -3px" />Bitte warten...</div>
-            </div>
-        </template>
-        <template v-else>
-            <div class="version-check"><loader size="16px" weight="2px" />Version wird überprüft...</div>
-        </template> -->
+        </ClientOnly>
     </div>
 </template>
 
@@ -126,14 +113,6 @@ async function updateSoftware() {
             align-items: center;
             gap: 10px;
         }
-    }
-
-    .version-check {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 14px;
-        font-weight: lighter;
     }
 }
 </style>
