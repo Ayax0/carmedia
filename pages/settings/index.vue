@@ -29,8 +29,8 @@ export default {
 <script setup>
 import { Setting } from "@/utils/settings";
 
-var display_name = ref(new Setting("general.display_name"));
-var default_volume = ref(new Setting("general.default_volume", 20));
+var display_name = new Setting("general.display_name");
+var default_volume = new Setting("general.default_volume", 20);
 var branch = ref(new Setting("general.software_branch", "origin/master"));
 
 const { data: branches } = await useFetch("/api/software/branch");
@@ -41,7 +41,7 @@ async function updateSoftware() {
     if(software_update.pending) return;
 
     software_update.pending = true;
-    $fetch("/api/software/update", { method: "POST", body: { branch: branch.value } })
+    $fetch("/api/software/update", { method: "POST", body: { branch: branch.value.value } })
     .then(() => {
         software_update.pending = false;
         software_update.error = false;
@@ -59,16 +59,18 @@ async function updateSoftware() {
         <div class="title">Startlautstärke</div>
         <horizontal-slider v-model="default_volume.value" />
         <div class="title">Software</div>
-        <ClientOnly v-if="branches">
-            <vselect v-model="branch.value" :items="branches.all" />
-            <div v-if="branches.version == branches.branches[branch.value].commit" class="version-latest">
-                <Icon name="mdi:check-circle" color="#1ED760" />
-                <div>Die Software ist auf dem aktuellsten Stand</div>
-            </div>
-            <div v-else class="version-update" @click="updateSoftware">
-                <div v-if="software_update.pending"><loader size="16px" weight="2px" style="margin-top: -3px" />Bitte warten...</div>
-                <div v-else>Update</div>
-            </div>
+        <ClientOnly>
+            <template v-if="branches">
+                <vselect v-model="branch.value" :items="branches.all" />
+                <div v-if="branches.version == branches.branches[branch.value].commit" class="version-latest">
+                    <Icon name="mdi:check-circle" color="#1ED760" />
+                    <div>Die Software ist auf dem aktuellsten Stand</div>
+                </div>
+                <div v-else class="version-update" @click="updateSoftware">
+                    <div v-if="software_update.pending"><loader size="16px" weight="2px" style="margin-top: -3px" />Bitte warten...</div>
+                    <div v-else>Update</div>
+                </div>
+            </template>
         </ClientOnly>
     </div>
 </template>
