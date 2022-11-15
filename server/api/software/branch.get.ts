@@ -4,8 +4,9 @@ import url from 'url';
 import fs from "fs";
 
 export default defineEventHandler(async (event) => {
-    const gitRoot = await simpleGit(path.dirname(url.fileURLToPath(import.meta.url))).revparse(["--show-toplevel"]);
-    const git = simpleGit(gitRoot);
+    console.log(path.dirname(url.fileURLToPath(import.meta.url)));
+    const git = simpleGit(path.dirname(url.fileURLToPath(import.meta.url)));
+    const gitRoot = await git.revparse(["--show-toplevel"]);
     const current_version = fs.readFileSync(path.join(gitRoot, "version.txt")).toString();
     
     var response = {
