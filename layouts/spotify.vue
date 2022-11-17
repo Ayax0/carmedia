@@ -14,6 +14,7 @@ export default {
             trackPosition: "0:00",
             trackLength: "0:00",
             paused: true,
+            query: "",
         };
     },
     methods: {
@@ -53,6 +54,11 @@ export default {
             const positionMinutes = Math.floor(millis / 60000);
             const positionSeconds = Math.round((millis % 60000) / 1000);
             return `${positionMinutes}:${positionSeconds.toLocaleString("de-CH", { minimumIntegerDigits: 2, useGrouping: false })}`;
+        },
+        search(event: KeyboardEvent) {
+            if(event.key != "Enter") return;
+            if(this.query == undefined || this.query.length == 0) navigateTo("/spotify");
+            else navigateTo("/spotify/search?query=" + this.query);
         }
     },
     async mounted() {
@@ -90,7 +96,7 @@ export default {
             <div class="home-button" @click="navigateTo('/spotify')"><Icon name="mdi:home" /></div>
             <div class="search-input">
                 <span><Icon name="mdi:magnify" /></span>
-                <input type="text" placeholder="Was möchtest du hören?" />
+                <input v-model="query" type="text" placeholder="Was möchtest du hören?" @keypress="search" />
             </div>
             <div class="spacer"></div>
             <div v-if="account" v-ripple class="account" @click="navigateTo('/spotify/login')">
