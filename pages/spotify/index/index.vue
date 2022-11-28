@@ -97,5 +97,9 @@ export default {
             display: none;
         }
     }
+
+    .category:last-of-type .tile {
+        margin-bottom: 2rem;
+    }
 }
 </style>
