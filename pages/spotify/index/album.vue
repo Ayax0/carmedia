@@ -3,25 +3,25 @@ import carmedia from "@/framework";
 import SpotifyPlayer from "@/framework/audio/SpotifyPlayer";
 
 export default {
-    name: "SpotifyPlaylistPage",
+    name: "SpotifyAlbumPage",
     data() {
         return {
-            playlist: undefined,
+            album: undefined,
         };
     },
     computed: {
-        playlist_id() {
+        album_id() {
             return this.$route.query.id;
         },
         thumbnail() {
-            return this.playlist?.images[0] || { url: "" };
+            return this.album?.images[0] || { url: "" };
         },
     },
     mounted() {
         const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
         activeAudioPlayer.api.instance
-            .get("/playlists/" + this.playlist_id)
-            .then((res) => (this.playlist = res.data))
+            .get("/albums/" + this.album_id)
+            .then((res) => (this.album = res.data))
             .catch((error) => console.log(error));
     },
     methods: {
@@ -32,13 +32,13 @@ export default {
             return `${minutes}:${seconds.toLocaleString("de-CH", { minimumIntegerDigits: 2 })}`;
         },
         playTrack(track) {
-            if (!this.playlist) return;
+            if (!this.album) return;
             if (!track) return;
 
             const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
             activeAudioPlayer.api.instance
                 .put("/me/player/play", {
-                    context_uri: this.playlist.uri,
+                    context_uri: this.album.uri,
                     offset: { uri: track.uri },
                 })
                 .then(() => console.log("start playing track"))
@@ -52,7 +52,7 @@ export default {
 </script>
 
 <template>
-    <NuxtLayout name="spotify-item" :thumbnail="thumbnail" category="Playlist" :title="playlist?.name" :info="playlist?.owner?.display_name">
+    <NuxtLayout name="spotify-item" :thumbnail="thumbnail" category="Album" :title="album?.name" :info="album?.owner?.display_name">
         <div class="playlist-body">
             <table>
                 <tr>
@@ -60,16 +60,15 @@ export default {
                     <th>Titel</th>
                     <th><Icon name="mdi:clock-outline" /></th>
                 </tr>
-                <tr v-for="(item, index) in playlist?.tracks?.items" v-ripple @click="playTrack(item.track)">
+                <tr v-for="(item, index) in album?.tracks?.items" v-ripple @click="playTrack(item.track)">
                     <td>{{ index + 1 }}</td>
                     <td>
                         <div class="track-info">
-                            <img :src="item.track?.album?.images[0]?.url || ''" />
-                            <div class="title text-overflow">{{ item.track?.name }}</div>
-                            <div class="subtitle text-overflow">{{ item.track?.artists.map((artist) => artist.name)?.join(", ") }}</div>
+                            <div class="title text-overflow">{{ item.name }}</div>
+                            <div class="subtitle text-overflow">{{ item.artists?.map((artist) => artist.name)?.join(", ") }}</div>
                         </div>
                     </td>
-                    <td>{{ formatDuration(item.track?.duration_ms) }}</td>
+                    <td>{{ formatDuration(item.duration_ms) }}</td>
                 </tr>
             </table>
         </div>
@@ -118,17 +117,9 @@ export default {
 
     .track-info {
         display: grid;
-        grid-template-areas:
-            "image title"
-            "image subtitle";
-        grid-template-columns: 3rem calc(100% - 3rem);
-        grid-template-rows: 1.5rem 1.5rem;
-
-        img {
-            grid-area: image;
-            width: 3rem;
-            height: 3rem;
-        }
+        display: flex;
+        flex-direction: column;
+        align-items: center;
 
         .title,
         .subtitle {

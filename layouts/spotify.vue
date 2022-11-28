@@ -49,6 +49,12 @@ export default {
                 activeAudioPlayer.seek((trackLength / event.target.clientWidth) * event.offsetX);
             }
         },
+        transferPlayback() {
+            if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
+                const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+                activeAudioPlayer.tranferPlayback();
+            }
+        },
         formatMillis(millis) {
             if(!millis) millis = 0;
             const positionMinutes = Math.floor(millis / 60000);
@@ -59,7 +65,7 @@ export default {
             if(event.key != "Enter") return;
             if(this.query == undefined || this.query.length == 0) navigateTo("/spotify");
             else navigateTo("/spotify/search?query=" + this.query);
-        }
+        },
     },
     async mounted() {
         if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
@@ -122,7 +128,7 @@ export default {
                 <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
             </div>
             <div class="action">
-                <div v-ripple class="button"><Icon name="mdi:cast-audio" /></div>
+                <div v-ripple class="button" @click="transferPlayback"><Icon name="mdi:cast-audio" /></div>
             </div>
             <div class="progress" :style="{ '--player-progress': `${progress}%` }">
                 <div style="text-align: start">{{ trackPosition }}</div>
@@ -318,6 +324,7 @@ export default {
                     background: white;
                     border-radius: 2.5px;
                     transition: width 1s ease;
+                    min-width: 10px;
                 }
             }
 

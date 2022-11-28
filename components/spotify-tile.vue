@@ -8,13 +8,14 @@ export default {
         color: { type: String, default: "transparent" },
         icon: { type: String, default: undefined },
         iconColor: { type: String, default: "white" },
+        rounded: { type: Boolean, default: undefined }
     },
 };
 </script>
 
 <template>
     <div class="tile">
-        <div class="image-wrapper" :style="{ background: color, color: iconColor }">
+        <div class="image-wrapper" :style="{ background: color, color: iconColor, 'border-radius': rounded ? '4rem' : '8px' }">
             <img v-if="thumbnail" :src="thumbnail" />
             <Icon v-if="icon" :name="icon" />
         </div>

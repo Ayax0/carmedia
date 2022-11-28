@@ -60,26 +60,19 @@ export default {
 
 <template>
     <div class="search-main">
-        <div class="category">
-            <div class="chip selected">Alle</div>
-            <div class="chip">Künstler*innen</div>
-            <div class="chip">Playlists</div>
-            <div class="chip">Songs</div>
-            <div class="chip">Podcasts und Shows</div>
-            <div class="chip">Alben</div>
-        </div>
-        <div v-if="result" class="content">
+        <template v-if="result">
             <div class="top-result">
                 <div class="title">Top-Ergebnis</div>
                 <div class="top-artist">
                     <div class="avatar" :style="{ 'background-image': `url(${result.artists?.items[0]?.images[0]?.url})` }"></div>
                     <div class="name text-overflow">{{ result.artists?.items[0]?.name }}</div>
+                    <div class="genre text-overflow">{{ result.artists?.items[0]?.genres?.join(', ') }}</div>
                 </div>
             </div>
             <div class="song-result">
                 <div class="title">Songs</div>
                 <table>
-                    <tr v-for="item in result.tracks?.items?.slice(0,3)" v-ripple @click="playTrack(item.uri, item.album?.uri)">
+                    <tr v-for="item in result.tracks?.items?.slice(0,4)" v-ripple @click="playTrack(item.uri, item.album?.uri)">
                         <td><div class="avatar" :style="{ 'background-image': `url(${item.album?.images[0]?.url})` }"></div></td>
                         <td>
                             <div class="name text-overflow">{{ item.name }}</div>
@@ -89,152 +82,204 @@ export default {
                     </tr>
                 </table>
             </div>
-            <div class="list-result"></div>
-        </div>
+            <div class="list-result">
+                <template v-if="result.artists && result.artists.items && result.artists.items.length > 0">
+                    <div class="title">Künstler*innen</div>
+                    <div class="category">
+                        <spotify-tile
+                            v-for="item in result.artists.items"
+                            :thumbnail="item.images[0]?.url"
+                            :title="item.name"
+                            :subtitle="item.genres.join(', ')"
+                            rounded
+                        />
+                    </div>
+                </template>
+                <template v-if="result.albums && result.albums.items && result.albums.items.length > 0">
+                    <div class="title">Alben</div>
+                    <div class="category">
+                        <spotify-tile
+                            v-for="item in result.albums.items"
+                            :thumbnail="item.images[0]?.url"
+                            :title="item.name"
+                            :subtitle="item.artists?.map((artist) => artist.name)?.join(', ')"
+                            @click="navigateTo('/spotify/album?id=' + item.id)"
+                        />
+                    </div>
+                </template>
+                <template v-if="result.playlists && result.playlists.items && result.playlists.items.length > 0">
+                    <div class="title">Playlists</div>
+                    <div class="category">
+                        <spotify-tile
+                            v-for="item in result.playlists.items"
+                            :thumbnail="item.images[0]?.url"
+                            :title="item.name"
+                            :subtitle="'von ' + item.owner?.display_name"
+                            @click="navigateTo('/spotify/playlist?id=' + item.id)"
+                        />
+                    </div>
+                </template>
+                <template v-if="result.tracks && result.tracks.items && result.tracks.items.length > 0">
+                    <div class="title">Songs</div>
+                    <div class="category">
+                        <spotify-tile
+                            v-for="item in result.tracks.items"
+                            :thumbnail="item.album?.images[0]?.url"
+                            :title="item.name"
+                            :subtitle="item.artists?.map((artist) => artist.name).join(', ')"
+                            @click="playTrack(item.uri, item.album?.uri)"
+                        />
+                    </div>
+                </template>
+                <template v-if="result.shows && result.shows.items && result.shows.items.length > 0">
+                    <div class="title">Podcasts</div>
+                    <div class="category">
+                        <spotify-tile
+                            v-for="item in result.shows.items"
+                            :thumbnail="item.images[0]?.url"
+                            :title="item.name"
+                            :subtitle="item.publisher"
+                            @click="navigateTo('/spotify/show?id=' + item.id)"
+                        />
+                    </div>
+                </template>
+            </div>
+        </template>
         <div v-else class="empty">Kein Ergebnis auf diese Suche</div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .search-main {
-    display: grid;
     width: 100%;
     height: 100%;
-    grid-template-columns: 100%;
-    grid-template-rows: 4rem calc(100% - 4rem);
+    display: grid;
+    grid-template-areas:
+        "top-result  song-result"
+        "list-result list-result";
+    grid-template-columns: 18rem calc(100% - 23rem);
+    grid-template-rows: 16.5rem auto;
+    overflow: hidden;
+    overflow-y: auto;
+    padding: 1rem 2rem 0 2rem;
+    column-gap: 2rem;
+    row-gap: 2rem;
 
-    .category {
+    .top-result {
+        grid-area: top-result;
         display: flex;
-        align-items: center;
-        padding: 0 2rem;
+        flex-direction: column;
         gap: 1rem;
-        overflow-x: auto;
 
-        &::-webkit-scrollbar {
-            display: none;
-        }
+        .top-artist {
+            flex: 1;
+            background: #181818;
+            border-radius: 8px;
 
-        .chip {
-            height: 2rem;
-            background: #232323;
-            border-radius: 1rem;
-            padding: 0 1rem;
             display: flex;
-            align-items: center;
-            font-weight: lighter;
-        }
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 1rem;
 
-        .chip.selected {
-            background: white;
-            color: #232323;
+            .avatar {
+                width: 8rem;
+                height: 8rem;
+                border-radius: 4rem;
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center;
+                overflow: hidden;
+                box-shadow: $shadow;
+            }
+
+            .name {
+                font-size: 28px;
+                margin-top: auto;
+            }
+
+            .genre {
+                font-size: 13px;
+                font-weight: lighter;
+                color: #ccc;
+                margin-top: -5px;
+            }
         }
     }
 
-    .content {
-        display: grid;
-        grid-template-areas:
-            "top-result  song-result"
-            "list-result list-result";
-        grid-template-columns: 18rem calc(100% - 20rem);
-        grid-template-rows: 13rem auto;
-        overflow: hidden;
-        overflow-y: auto;
-        padding: 0 2rem 2rem 2rem;
-        column-gap: 2rem;
-        row-gap: 2rem;
+    .song-result {
+        grid-area: song-result;
+        width: 100%;
+        max-width: 100%;
 
-        .top-result {
-            grid-area: top-result;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-
-            .top-artist {
-                flex: 1;
-                background: #181818;
-                border-radius: 8px;
-
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-start;
-                padding: 1rem;
-
-                .avatar {
-                    width: 5rem;
-                    height: 5rem;
-                    border-radius: 2.5rem;
-                    background-size: cover;
-                    background-repeat: no-repeat;
-                    background-position: center;
-                    overflow: hidden;
-                    box-shadow: $shadow;
-                }
-
-                .name {
-                    font-size: 28px;
-                    margin-top: auto;
-                }
-            }
-        }
-
-        .song-result {
-            grid-area: song-result;
+        table {
+            border-spacing: 0;
+            padding-top: 1rem;
+            table-layout: fixed;
             width: 100%;
-            max-width: 100%;
 
-            table {
-                border-spacing: 0;
-                padding-top: 1rem;
-                table-layout: fixed;
-                width: 100%;
+            color: #ccc;
+            font-size: 13px;
 
-                color: #ccc;
-                font-size: 13px;
+            tr > :nth-child(1) {
+                text-align: left;
+                width: 3.5rem;
+            }
 
-                tr > :nth-child(1) {
-                    text-align: left;
-                    width: 3.5rem;
-                }
+            tr > :nth-child(2) {
+                text-align: left;
+            }
 
-                tr > :nth-child(2) {
-                    text-align: left;
-                }
+            tr > :nth-child(3) {
+                text-align: right;
+                width: 3.5rem;
+            }
 
-                tr > :nth-child(3) {
-                    text-align: right;
-                    width: 3.5rem;
-                }
+            td {
+                font-weight: 100;
+                padding: 0.5rem 0;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
 
-                td {
-                    font-weight: 100;
-                    padding: 0.5rem 0;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                }
+            .avatar {
+                width: 2.5rem;
+                height: 2.5rem;
+                background-repeat: no-repeat;
+                background-size: cover;
+                background-position: center;
+            }
 
-                .avatar {
-                    width: 2.5rem;
-                    height: 2.5rem;
-                    background-repeat: no-repeat;
-                    background-size: cover;
-                    background-position: center;
-                }
-
-                .name {
-                    font-size: 15px;
-                    color: white;
-                }
+            .name {
+                font-size: 15px;
+                color: white;
             }
         }
+    }
 
-        .list-result {
-            grid-area: list-result;
-        }
+    .list-result {
+        grid-area: list-result;
 
-        .title {
-            font-size: 20px;
+        .category {
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding: 2rem 2rem 1rem 2rem;
+            margin: -1rem -2rem 1rem -2rem;
+            align-items: stretch;
+
+            .tile {
+                margin-bottom: 0rem;
+            }
+
+            &::-webkit-scrollbar {
+                display: none;
+            }
         }
+    }
+
+    .title {
+        font-size: 20px;
     }
 
     .empty {
