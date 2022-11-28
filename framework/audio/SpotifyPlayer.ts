@@ -44,6 +44,8 @@ export default class SpotifyPlayer extends AudioPlayer {
                     timestamp: Date.now(),
                 });
             });
+
+            this.player.activateElement();
         };
 
         if (!document.getElementById("spotify_script")) {
