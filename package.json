@@ -24,7 +24,7 @@
         "socket.io-client": "^4.5.3",
         "store-js": "^2.0.4",
         "three": "^0.147.0",
-        "vue3-whr-ripple-directive": "^1.0.0",
-        "wge-three-fbx-loader": "^1.0.3"
+        "vue3-google-map": "^0.15.0",
+        "vue3-whr-ripple-directive": "^1.0.0"
     }
 }
