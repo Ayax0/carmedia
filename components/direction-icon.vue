@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Blob } from 'buffer';
+import { Blob } from "buffer";
 
 export default {
     name: "DirectionIconComponent",
@@ -12,21 +12,20 @@ export default {
         name: {
             immediate: true,
             handler(value) {
-                if(!value) return;
+                if (!value) return;
 
-                $fetch("/directions/" + value + ".svg")
-                .then(async (res: Blob) => {
-                    const svg = <SVGElement> new DOMParser().parseFromString(await res.text(), "image/svg+xml").firstChild;
+                $fetch("/directions/" + value + ".svg").then(async (res: Blob) => {
+                    while (this.$el.firstChild) this.$el.removeChild(this.$el.firstChild);
+                    const svg = <SVGElement>new DOMParser().parseFromString(await res.text(), "image/svg+xml").firstChild;
                     svg.style.width = this.size;
                     svg.style.height = this.size;
-                    svg.style.fill = this.color;
-                    console.log(svg.firstChild);
+                    for (const child of svg.children) child.setAttribute("style", `fill: ${this.color}`);
                     this.$el.appendChild(svg);
                 });
-            }
-        }
-    }
-}
+            },
+        },
+    },
+};
 </script>
 
 <template>
@@ -36,7 +35,8 @@ export default {
             display: name ? 'flex' : 'none',
             '--icon-color': color,
             '--icon-size': size,
-        }" />
+        }"
+    />
 </template>
 
 <style lang="scss" scoped>

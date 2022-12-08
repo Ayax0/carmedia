@@ -4,27 +4,34 @@ export default {
     data() {
         return {
             route: undefined,
-        }
+        };
     },
     methods: {
         toggleNav() {
-            if(this.route) this.route = undefined;
+            if (this.route) this.route = undefined;
             else this.route = "Test";
-        }
-    }
-}
+        },
+    },
+};
 </script>
 
 <template>
     <div class="control-main">
         <div class="nav-step">
-            <direction-icon name="fork_right" size="4rem" />
+            <div class="next-action">
+                <direction-icon name="turn_left" size="2.5rem" />
+                <div>1.2 km</div>
+            </div>
         </div>
         <div class="nav-search" :class="{ active: route != undefined }">
             <div class="nav-button" @click="toggleNav"><Icon :name="route ? 'mdi:close' : 'mdi:magnify'" size="2rem" /></div>
-            <input type="text" placeholder="Wo willst du hin?">
+            <input type="text" placeholder="Wo willst du hin?" />
             <div class="nav-route">
-                <div class="text-overflow"><span>8min</span><div class="dot"></div>2.2km</div>
+                <div class="text-overflow">
+                    <span>8min</span>
+                    <div class="dot"></div>
+                    2.2km
+                </div>
                 <div class="text-overflow">Ankunft um 14:41</div>
             </div>
         </div>
@@ -49,6 +56,15 @@ export default {
         width: 100%;
         background: rgba(40, 40, 45, 0.8);
         border-radius: 10px;
+
+        .next-action {
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 32px;
+            font-weight: lighter;
+        }
     }
 
     .nav-search {
@@ -96,7 +112,6 @@ export default {
                 font-weight: lighter;
                 color: #ccc;
 
-
                 span {
                     color: $primary;
                 }
@@ -110,7 +125,7 @@ export default {
             }
         }
     }
-    
+
     .nav-search.active {
         input {
             padding: 0;

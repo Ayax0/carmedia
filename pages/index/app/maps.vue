@@ -1,6 +1,29 @@
+<script lang="ts">
+import store from "store-js";
+import models, { Model } from "~~/framework/models";
+
+export default defineComponent({
+    computed: {
+        model() {
+            return models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
+        },
+    },
+});
+</script>
+
 <template>
     <navigation-map>
-        <navigation-car />
+        <navigation-car :model="model" />
         <navigation-control />
     </navigation-map>
 </template>
+
+<style lang="scss" scoped>
+#nav-car {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 60%;
+    height: 100%;
+}
+</style>
