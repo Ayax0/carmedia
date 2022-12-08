@@ -12,8 +12,8 @@ export default defineComponent({
     },
     watch: {
         model: {
+            deep: true,
             handler(value) {
-                console.log("rerender");
                 this.render(value);
             },
         },
@@ -95,10 +95,6 @@ export default defineComponent({
 
                     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
                     renderer.setSize(width, height);
-                    // renderer.setAnimationLoop((time) => {
-                    //     fbx.rotation.y = time / 2000;
-                    //     renderer.render(scene, camera);
-                    // });
 
                     renderer.render(scene, camera);
 
