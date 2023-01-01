@@ -1,11 +1,13 @@
 <script lang="ts">
 import store from "store-js";
-import models, { Model } from "~~/framework/models";
+import models from "~~/framework/models";
 
 export default defineComponent({
     computed: {
         model() {
-            return models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
+            const model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
+            model.color.primary = store.get("navigation.model.primary") || model.color.primary;
+            return model;
         },
     },
 });

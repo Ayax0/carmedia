@@ -8,7 +8,7 @@ export default {
         return {
             api_key: null,
             model: models[0],
-            color: "#FFFFFF",
+            color: "hsl(30, 100%, 50%)",
         };
     },
     computed: {
@@ -22,9 +22,10 @@ export default {
         },
         model(value) {
             store.set("navigation.model", value.name);
+            this.color = value.color.primary;
         },
         color(value) {
-            console.log(value);
+            store.set("navigation.model.primary", value);
             this.model.color.primary = value;
         },
     },
@@ -38,7 +39,9 @@ export default {
     },
     mounted() {
         this.api_key = store.get("navigation.api_key");
-        this.model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
+        const model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
+        model.color.primary = store.get("navigation.model.primary");
+        this.model = model;
     },
 };
 </script>
@@ -48,7 +51,7 @@ export default {
         <vtextfield v-model="api_key" title="Google API Key" />
         <div class="title">Auto Model</div>
         <vselect v-model="model" :items="models" item-text="name" />
-        <color-slider v-model="color" />
+        <color-picker v-model="color" />
         <navigation-car :model="model" :camera="{ x: 0, y: 0, z: 550 }" :rotation="{ x: 10, y: 60, z: 0 }" @ready="ready" />
     </div>
 </template>
