@@ -18,21 +18,27 @@ export default {
 <template>
     <div class="control-main">
         <div class="nav-step">
-            <div class="next-action">
-                <direction-icon name="turn_left" size="2.5rem" />
-                <div>1.2 km</div>
+            <div class="step-icon"><direction-icon name="turn_left" size="2.5rem" /></div>
+            <div class="step-distance">1.2 km</div>
+            <div class="step-action">
+                Take the <b>E54</b>/<wbr /><b>N19</b>/<wbr /><b>S6</b> exit toward <b>Épinal</b>/<wbr /><b>Vesoul</b>/<wbr /><b>Héricourt</b>
+            </div>
+            <div class="step-progress">
+                <div class="route-distance">57 km</div>
+                <div class="route-time">31 min</div>
+                <div class="route-arrive">Ankunft um <b>09:11</b></div>
             </div>
         </div>
-        <div class="nav-search" :class="{ active: route != undefined }">
-            <div class="nav-button" @click="toggleNav"><Icon :name="route ? 'mdi:close' : 'mdi:magnify'" size="2rem" /></div>
-            <input type="text" placeholder="Wo willst du hin?" />
+        <div class="nav-action" :class="{ active: route != undefined }">
+            <div class="nav-search">
+                <div v-ripple class="nav-button" @click="toggleNav"><Icon name="mdi:magnify" size="2rem" /></div>
+                <input type="text" placeholder="Wo willst du hin?" />
+            </div>
             <div class="nav-route">
-                <div class="text-overflow">
-                    <span>8min</span>
-                    <div class="dot"></div>
-                    2.2km
-                </div>
-                <div class="text-overflow">Ankunft um 14:41</div>
+                <div v-ripple class="nav-button" @click="toggleNav"><Icon name="mdi:close" size="2rem" /></div>
+                <div v-ripple class="nav-button"><Icon name="mdi:map-marker-distance" size="2rem" /></div>
+                <div v-ripple class="nav-button"><Icon name="mdi:gas-station" size="2rem" /></div>
+                <div v-ripple class="nav-button"><Icon name="mdi:volume-high" size="2rem" /></div>
             </div>
         </div>
     </div>
@@ -52,89 +58,134 @@ export default {
     z-index: 10;
 
     .nav-step {
-        height: calc(100% - 4rem - 4rem - 2rem);
-        width: 100%;
+        height: calc(100% - 4rem - 2rem);
         background: rgba(40, 40, 45, 0.8);
         border-radius: 10px;
+        display: grid;
+        grid-template-areas:
+            "icon     distance"
+            "action   action"
+            "progress progress";
+        grid-template-columns: 2.5rem auto;
+        grid-template-rows: 2.5rem auto 2.5rem;
+        gap: 1rem;
+        padding: 1rem;
 
-        .next-action {
-            padding: 10px;
+        .step-icon {
+            grid-area: icon;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step-distance {
+            grid-area: distance;
+            display: flex;
+            align-items: center;
+            font-size: 32px;
+        }
+
+        .step-action {
+            grid-area: action;
+            font-weight: 100;
+            font-size: 20px;
+        }
+
+        .step-progress {
+            grid-area: progress;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin: 0 -1rem -1rem -1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
-            font-size: 32px;
-            font-weight: lighter;
+            padding: 0 1rem;
+
+            .route-distance {
+                position: relative;
+
+                &::after {
+                    content: "";
+                    position: absolute;
+                    left: calc(100% + 0.5rem);
+                    top: 50%;
+                    transform: translate3d(-50%, -50%, 0);
+                    background: white;
+                    height: 5px;
+                    width: 5px;
+                    border-radius: 2.5px;
+                }
+            }
+
+            .route-time {
+                color: rgb(41, 148, 235);
+                flex: 1;
+            }
+
+            .route-arrive {
+                font-weight: 100;
+            }
         }
     }
 
-    .nav-search {
+    .nav-action {
+        display: flex;
         height: 4rem;
         width: 100%;
+        max-width: 100%;
         background: rgba(30, 30, 35, 0.8);
+        border: 1px solid rgba(30, 30, 35, 0.9);
         border-radius: 10px;
-        display: flex;
         overflow: hidden;
 
         .nav-button {
-            padding: 1rem;
+            width: 4rem;
+            height: 4rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        input {
-            background: transparent;
-            border: none;
-            padding-right: 10px;
-            font-size: 18px;
-            color: white;
-
-            flex: 1;
+        .nav-search {
+            display: flex;
+            align-items: center;
+            min-width: 100%;
             max-width: 100%;
-            transition: max-width 0.2s ease-in-out, padding 0.2s ease-in-out;
+            margin-left: 0;
+            transition: margin-left 0.2s ease-in-out;
 
-            &:focus {
-                outline: none;
+            input {
+                height: 100%;
+                flex: 1;
+                padding-right: 1rem;
+                text-overflow: ellipsis;
+                background: transparent;
+                color: white;
+                border: none;
+                font-size: 18px;
+
+                &:focus {
+                    outline: none;
+                }
             }
         }
 
         .nav-route {
-            display: grid;
-            grid-template-rows: 50% 50%;
-            padding: 0;
+            display: flex;
+            align-items: center;
+            min-width: 100%;
+            max-width: 100%;
 
-            flex: 1;
-            max-width: 0;
-            transition: max-width 0.2s ease-in-out, padding 0.2s ease-in-out;
-
-            div {
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-size: 20px;
-                font-weight: lighter;
-                color: #ccc;
-
-                span {
-                    color: $primary;
-                }
-
-                .dot {
-                    width: 4px;
-                    height: 4px;
-                    background: #ccc;
-                    border-radius: 2px;
-                }
+            .nav-button {
+                flex: 1;
             }
         }
     }
 
-    .nav-search.active {
-        input {
-            padding: 0;
-            max-width: 0;
-        }
-
-        .nav-route {
-            padding: 5px 1rem 5px 10px;
-            max-width: 100%;
+    .nav-action.active {
+        .nav-search {
+            margin-left: -100%;
         }
     }
 }
