@@ -75,7 +75,7 @@ export default {
 <template>
     <NuxtLayout name="index">
         <template #default>
-            <NuxtChild />
+            <NuxtChild keep-alive />
             <volume-slider v-model="volume_dialog" v-model:volume="volume" />
             <swiper @swipe-up="up" @swipe-down="down" @swipe-left="left" @swipe-right="right" @swipe="swipe" />
         </template>

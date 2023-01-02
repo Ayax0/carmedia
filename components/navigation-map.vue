@@ -17,28 +17,24 @@ export default {
 
 <template>
     <div class="map-wrapper">
-        <ClientOnly>
-            <KeepAlive>
-                <GoogleMap
-                    class="map"
-                    :api-key="api_key"
-                    :zoom="18"
-                    :tilt="60"
-                    :disable-default-ui="true"
-                    :draggable="false"
-                    gesture-handling="cooperative"
-                    map-id="9a664a373c810533"
-                    language="de"
-                    :center="{ lat: 47.047834597918644, lng: 8.303957758935331 }"
-                >
-                    <template #default="{ ready, api, map }">
-                        <div v-if="ready" class="map-slot">
-                            <slot :api="api" :map="map" />
-                        </div>
-                    </template>
-                </GoogleMap>
-            </KeepAlive>
-        </ClientOnly>
+        <GoogleMap
+            class="map"
+            :api-key="api_key"
+            :zoom="18"
+            :tilt="60"
+            :disable-default-ui="true"
+            :draggable="false"
+            gesture-handling="cooperative"
+            map-id="9a664a373c810533"
+            language="de"
+            :center="{ lat: 47.047834597918644, lng: 8.303957758935331 }"
+        >
+            <template #default="{ ready, api, map }">
+                <div v-if="ready" class="map-slot">
+                    <slot :api="api" :map="map" />
+                </div>
+            </template>
+        </GoogleMap>
     </div>
 </template>
 
