@@ -1,14 +1,17 @@
 <script lang="ts">
 import carmedia from "@/framework";
+import imageMixin from "~~/mixins/image.mixin";
 
 export default {
     name: "IndexLayout",
+    mixins: [imageMixin],
     data() {
         return {
             thumbnail: null,
             song: "-",
             artist: "Unbekannter Interpret",
             progress: 0,
+            color: "rgb(13, 13, 13)",
         };
     },
     methods: {
@@ -16,6 +19,7 @@ export default {
             this.thumbnail = state.track?.thumbnail;
             this.song = state.track?.name || "-";
             this.artist = state.track?.artists?.join(", ") || "Unbekannter Interpret";
+            this.getImageColor(state.track?.thumbnail).then((c) => (this.color = `rgb(${c.r},${c.g},${c.b})`));
         },
     },
     mounted() {
@@ -43,7 +47,7 @@ export default {
             <slot />
         </div>
         <div class="timeline"><div class="thumb" :style="{ '--prog': progress + '%' }" /></div>
-        <div class="control">
+        <div class="control" :style="{ '--color': color }">
             <div class="thumbnail" :style="{ 'background-image': thumbnail ? `url(${thumbnail})` : '' }">
                 <slot name="thumbnail" />
             </div>
@@ -61,7 +65,7 @@ export default {
     width: 100vw;
     height: 100vh;
     display: grid;
-    grid-template-rows: auto 5px 8rem;
+    grid-template-rows: auto 5px 6rem;
 
     .content {
         position: relative;
@@ -83,12 +87,12 @@ export default {
         }
     }
     .control {
-        background: $background;
+        background: linear-gradient(to right, var(--color) 0%, #0d0d0d 50%, #161616 100%);
         display: grid;
-        grid-template-columns: 8rem calc(100vw - 8rem - 25rem) 25rem;
+        grid-template-columns: 6rem calc(100vw - 6rem - 25rem) 25rem;
+        grid-template-rows: 100%;
 
         .thumbnail {
-            margin: 1rem;
             background-repeat: no-repeat;
             background-size: contain;
             box-shadow: $shadow;
@@ -99,13 +103,14 @@ export default {
             display: flex;
             flex-direction: column;
             justify-content: center;
+            padding: 0 1rem;
 
             .song {
                 font-size: 22px;
                 font-weight: bold;
                 white-space: initial;
                 display: -webkit-box;
-                -webkit-line-clamp: 3;
+                -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
             }
 

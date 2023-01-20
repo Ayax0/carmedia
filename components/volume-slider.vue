@@ -23,24 +23,23 @@ export default {
             immediate: true,
             handler(value) {
                 this.localVolume = value;
-            }
+            },
         },
         localVolume(value, previous) {
-            if(value != previous) {
+            if (value != previous) {
                 this.$emit("update:volume", value);
-                if(this.timeout) {
+                if (this.timeout) {
                     clearTimeout(this.timeout);
-                    this.timeout = setTimeout(() => this.colapse = false, 10000);
+                    this.timeout = setTimeout(() => (this.colapse = false), 10000);
                 }
             }
         },
         colapse(value, previous) {
             if (value != previous) {
                 this.$emit("update:modelValue", value);
-                if(this.timeout) clearTimeout(this.timeout);
+                if (this.timeout) clearTimeout(this.timeout);
             }
-            if (previous == false && value == true)
-                this.timeout = setTimeout(() => this.colapse = false, 10000);
+            if (previous == false && value == true) this.timeout = setTimeout(() => (this.colapse = false), 10000);
         },
     },
 };
@@ -62,7 +61,7 @@ export default {
     height: calc(100% - 3rem);
     max-height: 4rem;
     border-radius: 2rem;
-    border: 3px solid rgb(10, 10, 10);
+    border: 1px solid rgba(20, 20, 20, 0.6);
     background: rgba(20, 20, 20, 0.5);
     display: flex;
     flex-direction: column-reverse;

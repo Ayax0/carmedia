@@ -18,10 +18,16 @@ export default {
 <template>
     <div class="control-main">
         <div class="nav-step">
-            <div class="step-icon"><direction-icon name="turn_left" size="2.5rem" /></div>
-            <div class="step-distance">1.2 km</div>
+            <div class="step-maneuver">
+                <direction-icon name="continue_right" size="2.5rem" />
+                <div>1.2 km</div>
+            </div>
             <div class="step-action">
-                Take the <b>E54</b>/<wbr /><b>N19</b>/<wbr /><b>S6</b> exit toward <b>Épinal</b>/<wbr /><b>Vesoul</b>/<wbr /><b>Héricourt</b>
+                <b>Rechts</b> halten, weiter auf <b>E54</b> und der Beschilderung für <b>A5</b>/<wbr /><b>Paris</b>/<wbr /><b>Troyes</b>/<wbr /><b
+                    >Chaumont</b
+                >
+                folgen Lorem ipsum dolor sit amet.
+                <div style="font-size: 0.9em">Gebührenpflichtige Straße</div>
             </div>
             <div class="step-progress">
                 <div class="route-distance">57 km</div>
@@ -62,41 +68,35 @@ export default {
         background: rgba(40, 40, 45, 0.8);
         border-radius: 10px;
         display: grid;
-        grid-template-areas:
-            "icon     distance"
-            "action   action"
-            "progress progress";
-        grid-template-columns: 2.5rem auto;
-        grid-template-rows: 2.5rem auto 2.5rem;
-        gap: 1rem;
-        padding: 1rem;
+        grid-template-columns: auto;
+        grid-template-rows: 4rem calc(100% - 4rem - 3rem - 0.8rem - 0.8rem) 3rem;
+        gap: 0.8rem;
 
-        .step-icon {
-            grid-area: icon;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .step-distance {
-            grid-area: distance;
+        .step-maneuver {
             display: flex;
             align-items: center;
             font-size: 32px;
+            gap: 1rem;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            // border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 10px 10px 0 0;
         }
 
         .step-action {
-            grid-area: action;
             font-weight: 100;
             font-size: 20px;
+            padding: 0 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         .step-progress {
-            grid-area: progress;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            margin: 0 -1rem -1rem -1rem;
             display: flex;
             align-items: center;
             gap: 1rem;
