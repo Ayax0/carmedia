@@ -15,6 +15,8 @@ export default {
             trackLength: "0:00",
             paused: true,
             query: "",
+            volume: 0,
+            volume_prev: 0
         };
     },
     methods: {
@@ -89,6 +91,18 @@ export default {
                     this.progress = (100 / trackLength) * (lastPosition + timeDifference);
                 }
             }, 1000);
+
+            this.volume = (await $fetch("/api/volume"))["volume"];
+            setInterval(async () => {
+                if (this.volume_prev != this.volume) {
+                    try {
+                        await $fetch("/api/volume", { method: "post", body: { volume: this.volume } });
+                        this.volume_prev = this.volume;
+                    } catch (error) {
+                        console.error("error updating volume");
+                    }
+                }
+            }, 500);
         } else navigateTo("/app");
     },
 };
@@ -129,6 +143,10 @@ export default {
             </div>
             <div class="action">
                 <div v-ripple class="button" @click="transferPlayback"><Icon name="mdi:cast-audio" /></div>
+                <div class="volume">
+                    <Icon name="mdi:volume" />
+                    <spotify-slider v-model="volume" />
+                </div>
             </div>
             <div class="progress" :style="{ '--player-progress': `${progress}%` }">
                 <div style="text-align: start">{{ trackPosition }}</div>
@@ -297,6 +315,14 @@ export default {
                 align-items: center;
                 height: calc(100% - 2rem);
                 padding: 1rem;
+            }
+
+            .volume {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding-right: 1rem;
+                height: calc(100%);
             }
         }
 
