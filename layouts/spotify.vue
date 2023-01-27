@@ -142,7 +142,7 @@ export default {
                 <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
             </div>
             <div class="action">
-                <div v-ripple class="button" @click="transferPlayback"><Icon name="mdi:cast-audio" /></div>
+                <div v-ripple class="button" @click="transferPlayback"><Icon name="mdi:laptop" /></div>
                 <div class="volume">
                     <Icon name="mdi:volume" />
                     <spotify-slider v-model="volume" />
