@@ -1,52 +1,61 @@
-<script>
-import applications from "@/framework/applications";
+<script lang="ts">
+import applications, { Application } from "@/framework/applications";
 import carmedia from "@/framework";
+
+import { format } from "date-fns";
 
 export default {
     name: "AppPage",
+    data() {
+        return {
+            date: null,
+            time: null,
+        }
+    },
     computed: {
         apps() {
             return applications;
         },
-        current_app_icon() {
-            if (!carmedia.activeApplication) return "mdi:home";
-            return carmedia.activeApplication.icon;
-        },
-        current_app_name() {
-            if (!carmedia.activeApplication) return "Home";
-            return carmedia.activeApplication.name;
+        current_app() {
+            return carmedia.activeApplication || {
+                id: "home",
+                name: "Home",
+                icon: "mdi:home",
+                path: "/",
+            } as Application;
         },
     },
     methods: {
-        navigateHome() {
-            if (carmedia.activeApplication) navigateTo(carmedia.activeApplication.path);
-            else navigateTo("/");
+        updateTime() {
+            this.time = format(new Date(), "HH:mm")
         },
     },
+    mounted() {
+        setInterval(this.updateTime.bind(this), 1000);
+    }
 };
 </script>
 
 <template>
     <NuxtLayout name="app">
         <template #header>
-            <vbutton
-                v-ripple
-                :icon="current_app_icon"
-                iconSize="1.5rem"
-                height="100%"
-                width="auto"
-                style="padding-left: 0.5rem"
-                @click="navigateHome"
-                >{{ current_app_name }}</vbutton
-            >
+            <div class="header-time">{{ time }}</div>
             <div class="spacer"></div>
             <status-icon icon="mdi:bluetooth" width="2.5rem" />
             <status-icon icon="mdi:signal" width="2.5rem" />
         </template>
         <template #default>
-            <app-icon v-for="app in apps" :key="app.name" :app="app" />
+            <app-icon :app="current_app" />
+            <template v-for="app in apps">
+                <app-icon v-if="app.id != current_app.id" :key="app.name" :app="app" />
+            </template>
         </template>
     </NuxtLayout>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.header-time {
+    margin-left: 1rem;
+    font-size: 20px;
+}
+</style>

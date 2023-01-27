@@ -9,7 +9,7 @@ const { data: branches } = await useFetch("/api/software/branch");
 
 const software_update = ref({ pending: false, error: false });
 
-async function updateSoftware() {
+function updateSoftware() {
     if(software_update.value.pending) return;
 
     software_update.value.pending = true;
@@ -22,6 +22,10 @@ async function updateSoftware() {
         software_update.value.pending = false;
         software_update.value.error = true;
     })
+}
+
+function restartDevice() {
+    $fetch("/api/hardware/restart", { method: "POST" });
 }
 </script>
 
@@ -44,6 +48,8 @@ async function updateSoftware() {
                 </div>
             </template>
         </ClientOnly>
+        <div class="title">Erweiterte Funktionen</div>
+        <button v-ripple @click="restartDevice">Gerät neustarten</button>
     </div>
 </template>
 
@@ -88,5 +94,14 @@ async function updateSoftware() {
             gap: 10px;
         }
     }
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px solid $primary;
+    background: transparent;
+    color: white;
+    font-size: 16px;
 }
 </style>

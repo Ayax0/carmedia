@@ -31,12 +31,6 @@ const applications: Array<Application> = [
         },
     },
     {
-        id: "soundcloud",
-        name: "Soundcloud",
-        icon: "mdi:soundcloud",
-        thumbnail: "/icons/soundcloud.png",
-    },
-    {
         id: "navigation",
         name: "Navigation",
         icon: "mdi:navigation",

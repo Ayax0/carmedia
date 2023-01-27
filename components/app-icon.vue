@@ -15,7 +15,8 @@ export default {
 </script>
 
 <template>
-    <div v-ripple class="application" :style="{ 'background-image': app ? `url(${app.thumbnail})` : '' }" @click="click">
+    <div v-ripple class="application" :style="{ 'background-image': app && app.thumbnail ? `url(${app.thumbnail})` : '' }" @click="click">
+        <div v-if="!app.thumbnail" class="application-icon"><Icon :name="app.icon" size="5rem" /></div>
         <div class="label text-overflow">{{ app.name }}</div>
     </div>
 </template>
@@ -28,6 +29,14 @@ export default {
     background-size: cover;
     background-position: center;
 
+    .application-icon {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 1rem;
+    }
     .label {
         position: absolute;
         top: calc(100% + 1rem);

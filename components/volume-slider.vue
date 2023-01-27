@@ -58,7 +58,7 @@ export default {
     bottom: 1rem;
     left: 1rem;
     width: 4rem;
-    height: calc(100% - 3rem);
+    height: calc(100% - 2rem);
     max-height: 4rem;
     border-radius: 2rem;
     border: 1px solid rgba(20, 20, 20, 0.6);
