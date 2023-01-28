@@ -52,6 +52,11 @@ export default {
                     show_dialog: true,
                 }).toString();
         },
+        logout(account) {
+            this.accounts = this.accounts.filter((acc) => acc.id != account.id);
+            store.set("spotify.accounts", this.accounts);
+            navigateTo(window.location.pathname);
+        },
         async exchange(code) {
             const spotify_api = new SpotifyAPI(this.client_id, this.client_secret);
             try {
@@ -93,6 +98,9 @@ export default {
             <div class="info">
                 <div class="name">{{ account.display_name }}</div>
                 <div class="follower">{{ account.followers.total || 0 }} Follower</div>
+            </div>
+            <div class="action">
+                <vbutton @click="logout(account)" icon="mdi:logout" iconSize="1.5rem" width="4rem" height="4rem" />
             </div>
         </div>
         <div class="add-account" @click="login">Account hinzufügen</div>
@@ -138,6 +146,7 @@ export default {
         }
 
         .info {
+            flex: 1;
             .name {
                 font-size: 20px;
             }

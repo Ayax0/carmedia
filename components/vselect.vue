@@ -41,6 +41,7 @@ export default {
 select {
     border: 1px solid rgb(20, 20, 20);
     height: 2rem;
+    min-height: 2rem;
 
     &:focus {
         outline: none;

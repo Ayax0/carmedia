@@ -4,8 +4,8 @@ export default {
     props: {
         icon: { type: String, required: true },
         iconSize: { type: String, default: "2.5rem" },
-        width: { type: String, default: "6rem" },
-        height: { type: String, default: "8rem" },
+        width: { type: String, default: "auto" },
+        height: { type: String, default: "auto" },
     },
 };
 </script>
