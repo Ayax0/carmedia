@@ -9,6 +9,7 @@ The software is still under development. The Spotify integration is already full
 - SixFab LTE Base HAT
 - LTE module
 - LTE antenna
+- an angled micro USB cable
 - Data SIM (with about 10Mbits speed)
 - Mikroe GNSS 7 Click (GPS module)
 - GPS antenna
@@ -26,6 +27,16 @@ The required connector is called Quadlock. If your car comes with a small 1 DIN 
 - car panel to fit a bigger radio: https://www.aliexpress.com/item/4001163253040.html?spm=a2g0o.order_list.order_list_main.111.41f65c5fsUb2BG
 - 3d printed mount: https://www.thingiverse.com/thing:5810290
 
+Connect the Pins of Quadlock to the following Ports on the HiFiBerry.
+
+Please use <a href='https://connector.pinoutguide.com/40__16_12_12__pin_Head_Unit_Car_Stereo_Quadlock/'>this picture </a> as a reference for the Pin numbers.
+
+- Block B: Pin 1 = V+
+- Block A: Pin 16= V-
+- Block A: Pin 3= Speaker L +
+- Block A: Pin 7= Speaker L -
+- Block A: Pin 2= Speaker R +
+- Block A: Pin 6= Speaker L -
 
 ----
 
