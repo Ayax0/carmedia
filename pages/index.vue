@@ -85,11 +85,11 @@ export default {
             </div>
         </template>
         <template #action>
-            <vbutton icon="mdi:skip-previous" @click="activeAudioPlayer?.previousTrack()" />
-            <vbutton v-if="paused" icon="mdi:play" @click="activeAudioPlayer?.play()" />
-            <vbutton v-else icon="mdi:pause" @click="activeAudioPlayer?.pause()" />
-            <vbutton icon="mdi:skip-next" @click="activeAudioPlayer?.nextTrack()" />
-            <vbutton icon="mdi:apps" @click="navigateTo('/app')" />
+            <vbutton icon="mdi:skip-previous" width="6rem" height="6rem" @click="activeAudioPlayer?.previousTrack()" />
+            <vbutton v-if="paused" icon="mdi:play" width="6rem" height="6rem" @click="activeAudioPlayer?.play()" />
+            <vbutton v-else icon="mdi:pause" width="6rem" height="6rem" @click="activeAudioPlayer?.pause()" />
+            <vbutton icon="mdi:skip-next" width="6rem" height="6rem" @click="activeAudioPlayer?.nextTrack()" />
+            <vbutton icon="mdi:apps" width="6rem" height="6rem" @click="navigateTo('/app')" />
         </template>
     </NuxtLayout>
 </template>

@@ -7,10 +7,21 @@ export default {
     components: {
         GoogleMap,
     },
+    data() {
+        return {
+            gps: undefined,
+        };
+    },
     computed: {
         api_key() {
             return store.get("navigation.api_key");
         },
+        center() {
+            return { lat: this.gps?.lat || 0, lng: this.gps?.lon || 0 };
+        },
+    },
+    mounted() {
+        this.$socket.on("gps", (data) => (this.gps = data));
     },
 };
 </script>
@@ -27,7 +38,7 @@ export default {
             gesture-handling="cooperative"
             map-id="9a664a373c810533"
             language="de"
-            :center="{ lat: 47.047834597918644, lng: 8.303957758935331 }"
+            :center="center"
         >
             <template #default="{ ready, api, map }">
                 <div v-if="ready" class="map-slot">

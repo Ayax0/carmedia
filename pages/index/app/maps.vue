@@ -15,8 +15,11 @@ export default defineComponent({
 
 <template>
     <navigation-map>
-        <navigation-car :model="model" />
-        <navigation-control />
+        <template #default="{ api, map }">
+            <navigation-car :model="model" />
+            <navigation-control />
+            <navigation-movement :api="api" :map="map" />
+        </template>
     </navigation-map>
 </template>
 
