@@ -21,7 +21,10 @@ export default {
         },
     },
     mounted() {
-        this.$socket.on("gps", (data) => (this.gps = data));
+        this.$socket.on("gps", (data) => {
+            this.gps = data;
+            console.log(data);
+        });
     },
 };
 </script>
