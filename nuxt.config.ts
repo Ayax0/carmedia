@@ -13,7 +13,7 @@ export default defineNuxtConfig({
             },
         },
         build: {
-            sourcemap: true,
+            sourcemap: false,
         },
     },
     modules: ["nuxt-icon"],
