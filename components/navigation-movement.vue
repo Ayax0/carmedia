@@ -5,7 +5,6 @@ const { api, map } = defineProps<{
 }>();
 
 const { $socket } = useNuxtApp();
-
 $socket.on("gps", (packet) => {
     if (!map) return;
 

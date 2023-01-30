@@ -12,11 +12,11 @@ export default {
             return store.get("navigation.api_key");
         },
     },
-    mounted() {
-        this.$socket.on("gps", (data) => {
-            console.log(data);
-        });
-    },
+    // mounted() {
+    //     this.$socket.on("gps", (data) => {
+    //         console.log(data);
+    //     });
+    // },
 };
 </script>
 
