@@ -1,4 +1,4 @@
-import fs from "fs";
+const fs = require("fs");
 
 if (!fs.existsSync("../.output/server/node_modules/@serialport/bindings-cpp/prebuilds")) {
     console.log("serialport: no prebuilds found");
