@@ -37,9 +37,6 @@ export default defineNuxtConfig({
                     if (err) console.error(err);
                     else console.log("local version set");
                 });
-
-                if (!fs.existsSync(".output/server/node_modules/@serialport/bindings-cpp/prebuilds"))
-                    fs.cpSync("./node_modules/@serialport/bindings-cpp/prebuilds", ".output/server/node_modules/@serialport/bindings-cpp/prebuilds");
             }
         },
     },
