@@ -9,41 +9,44 @@ const ready = ref(false);
 const map = ref<Map>();
 const api = new RoutingApi(store.get("navigation.api_key"));
 
-onMounted(() => {
-    setTimeout(async () => {
-        const mapElement: HTMLElement = await new Promise(async (resolve) => {
-            while (document.getElementById("map") == null) {
-                await new Promise((resolve2) => setTimeout(() => resolve2, 1));
+onMounted(async () => {
+    const mapElement: HTMLElement = await new Promise(async (resolve) => {
+        var timer = setInterval(() => {
+            const el = document.getElementById("map");
+            if (el != null) {
+                clearInterval(timer);
+                resolve(el);
             }
-            resolve(document.getElementById("map"));
-        });
+        }, 100);
+    });
 
-        map.value = new Map({
-            container: mapElement,
-            zoom: 18,
-            style: "https://api.maptiler.com/maps/bbed2c88-042e-46ec-8e60-5f5b12cd78e1/style.json?key=iHYc2jkalmprZBsL4zHn",
-            pitch: 60,
-            interactive: false,
-        });
+    console.log(mapElement);
 
-        $socket.on("gps", (packet) => {
-            // UBX-NAV-PVT
-            if (packet.packet_class == 0x01 && packet.packet_id == 0x07) {
-                setTimeout(() => {
-                    map.value.easeTo({
-                        center: { lat: packet.lat, lng: packet.lon },
-                        bearing: packet.headVeh,
-                        duration: 100,
-                        easing: (num) => num,
-                    });
-                }, 1);
-                if (packet.gSpeed * 0.0036 > 70) map.value.setZoom(16);
-                else map.value.setZoom(18);
-            }
-        });
+    map.value = new Map({
+        container: mapElement,
+        zoom: 18,
+        style: "https://api.maptiler.com/maps/bbed2c88-042e-46ec-8e60-5f5b12cd78e1/style.json?key=iHYc2jkalmprZBsL4zHn",
+        pitch: 60,
+        interactive: false,
+    });
 
-        ready.value = true;
-    }, 500);
+    $socket.on("gps", (packet) => {
+        // UBX-NAV-PVT
+        if (packet.packet_class == 0x01 && packet.packet_id == 0x07) {
+            setTimeout(() => {
+                map.value.easeTo({
+                    center: { lat: packet.lat, lng: packet.lon },
+                    bearing: packet.headVeh,
+                    duration: 100,
+                    easing: (num) => num,
+                });
+            }, 1);
+            if (packet.gSpeed * 0.0036 > 70) map.value.setZoom(16);
+            else map.value.setZoom(18);
+        }
+    });
+
+    ready.value = true;
 });
 </script>
 
