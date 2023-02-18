@@ -9,9 +9,16 @@ const ready = ref(false);
 const map = ref<Map>();
 const api = new RoutingApi(store.get("navigation.api_key"));
 
-onMounted(() => {
+onMounted(async () => {
+    const mapElement: HTMLElement = await new Promise(async (resolve) => {
+        while (document.getElementById("map") == null) {
+            await new Promise((resolve2) => setTimeout(() => resolve2, 1));
+        }
+        resolve(document.getElementById("map"));
+    });
+
     map.value = new Map({
-        container: "map",
+        container: mapElement,
         zoom: 18,
         style: "https://api.maptiler.com/maps/bbed2c88-042e-46ec-8e60-5f5b12cd78e1/style.json?key=iHYc2jkalmprZBsL4zHn",
         pitch: 60,
