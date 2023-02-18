@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { Polyline } from "vue3-google-map";
+import { Map } from "maplibre-gl";
+import RoutingApi from "~~/framework/navigation/RoutingApi";
 
 const { api, map } = defineProps<{
-    api: typeof google.maps;
-    map: google.maps.Map;
+    api: RoutingApi;
+    map: Map;
 }>();
 
 var nav_target = ref<string>("st niklausengasse 8");
@@ -28,27 +29,27 @@ function resetRoute() {
     this.routes = null;
 }
 
-function loadRoute(to, from = this.gps) {
-    console.log(to, from);
-    if (!to) return;
-    if (!from || !from.lat || !from.lng) return;
+// function loadRoute(to, from = this.gps) {
+//     console.log(to, from);
+//     if (!to) return;
+//     if (!from || !from.lat || !from.lng) return;
 
-    new api.DirectionsService().route(
-        {
-            origin: from,
-            destination: to,
-            travelMode: api.TravelMode.DRIVING,
-            unitSystem: api.UnitSystem.METRIC,
-            region: "CH",
-            language: "de",
-        },
-        (result, status) => {
-            if (status != api.DirectionsStatus.OK) return console.warn("routing error");
-            routes.value = result.routes;
-            console.log(routes.value);
-        }
-    );
-}
+//     new api.DirectionsService().route(
+//         {
+//             origin: from,
+//             destination: to,
+//             travelMode: api.TravelMode.DRIVING,
+//             unitSystem: api.UnitSystem.METRIC,
+//             region: "CH",
+//             language: "de",
+//         },
+//         (result, status) => {
+//             if (status != api.DirectionsStatus.OK) return console.warn("routing error");
+//             routes.value = result.routes;
+//             console.log(routes.value);
+//         }
+//     );
+// }
 
 const { $socket } = useNuxtApp();
 $socket.on("gps", (packet) => {
@@ -82,7 +83,7 @@ $socket.on("gps", (packet) => {
         </div>
         <div class="nav-action" :class="{ active: routes != undefined }">
             <div class="nav-search">
-                <div v-ripple class="nav-button" @click="loadRoute(nav_target)"><Icon name="mdi:magnify" size="2rem" /></div>
+                <div v-ripple class="nav-button"><Icon name="mdi:magnify" size="2rem" /></div>
                 <input v-model="nav_target" type="text" placeholder="Wo willst du hin?" />
             </div>
             <div class="nav-route">

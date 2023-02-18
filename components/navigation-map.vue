@@ -1,44 +1,33 @@
-<script>
+<script lang="ts" setup>
 import store from "store-js";
-import { GoogleMap } from "vue3-google-map";
+import { Map } from "maplibre-gl";
+import RoutingApi from "@/framework/navigation/RoutingApi";
 
-export default {
-    name: "NavigationMapComponent",
-    components: {
-        GoogleMap,
-    },
-    computed: {
-        api_key() {
-            return store.get("navigation.api_key");
-        },
-    },
-    // mounted() {
-    //     this.$socket.on("gps", (data) => {
-    //         console.log(data);
-    //     });
-    // },
-};
+const ready = ref(false);
+const map = ref<Map>();
+const api = new RoutingApi(store.get("navigation.api_key"));
+
+onMounted(() => {
+    map.value = new Map({
+        container: "map",
+        zoom: 18,
+        style: "https://api.maptiler.com/maps/bbed2c88-042e-46ec-8e60-5f5b12cd78e1/style.json?key=iHYc2jkalmprZBsL4zHn",
+        interactive: false,
+        pitch: 60,
+        center: { lat: 47.05286779391203, lon: 8.28453444777522 },
+    });
+
+    ready.value = true;
+});
 </script>
 
 <template>
     <div class="map-wrapper">
-        <GoogleMap
-            class="map"
-            :api-key="api_key"
-            :zoom="18"
-            :tilt="60"
-            :disable-default-ui="true"
-            :draggable="false"
-            gesture-handling="cooperative"
-            map-id="9a664a373c810533"
-            language="de"
-        >
-            <template #default="{ ready, api, map }">
-                <div v-if="ready" class="map-slot">
-                    <slot :api="api" :map="map" />
-                </div>
-            </template>
-        </GoogleMap>
+        <div id="map" class="map">
+            <div v-if="ready" class="map-slot">
+                <slot :api="api" :map="map" />
+            </div>
+        </div>
     </div>
 </template>
 
