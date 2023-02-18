@@ -1,68 +1,13 @@
-<script setup lang="ts">
-import { Map } from "maplibre-gl";
-import RoutingApi from "~~/framework/navigation/RoutingApi";
-
-const { api, map } = defineProps<{
-    api: RoutingApi;
-    map: Map;
-}>();
-
-var nav_target = ref<string>("st niklausengasse 8");
-var routes = ref<google.maps.DirectionsRoute[]>(null);
-var gps = ref({
-    lat: null,
-    lng: null,
-});
-
-const currentRoute = computed(() => {
-    if (routes.value && routes.value[0]) return routes.value[0];
-    return undefined;
-});
-const currentPath = computed(() => {
-    const leg = currentRoute.value?.legs[0];
-    const steps = leg?.steps;
-    const path = steps?.map((step) => step.path).reduce((value, current) => value.concat(current), []);
-    return path;
-});
-
-function resetRoute() {
-    this.routes = null;
-}
-
-// function loadRoute(to, from = this.gps) {
-//     console.log(to, from);
-//     if (!to) return;
-//     if (!from || !from.lat || !from.lng) return;
-
-//     new api.DirectionsService().route(
-//         {
-//             origin: from,
-//             destination: to,
-//             travelMode: api.TravelMode.DRIVING,
-//             unitSystem: api.UnitSystem.METRIC,
-//             region: "CH",
-//             language: "de",
-//         },
-//         (result, status) => {
-//             if (status != api.DirectionsStatus.OK) return console.warn("routing error");
-//             routes.value = result.routes;
-//             console.log(routes.value);
-//         }
-//     );
-// }
-
-const { $socket } = useNuxtApp();
-$socket.on("gps", (packet) => {
-    if (packet.packet_class == 0x01 && packet.packet_id == 0x07) {
-        gps.value.lat = packet.lat;
-        gps.value.lng = packet.lon;
-    }
-});
+<script>
+export default {
+    props: {
+        value: { type: Boolean, default: false },
+    },
+};
 </script>
 
 <template>
     <div class="control-main">
-        <Polyline v-if="currentPath" :options="{ path: currentPath, strokeColor: '#940700', strokeWeight: 8, strokeOpacity: 0.8 }" />
         <div class="nav-step">
             <div class="step-maneuver">
                 <direction-icon name="continue_right" size="2.5rem" />
@@ -81,7 +26,7 @@ $socket.on("gps", (packet) => {
                 <div class="route-arrive">Ankunft um <b>09:11</b></div>
             </div>
         </div>
-        <div class="nav-action" :class="{ active: routes != undefined }">
+        <div class="nav-action" :class="{ active: value }">
             <div class="nav-search">
                 <div v-ripple class="nav-button"><Icon name="mdi:magnify" size="2rem" /></div>
                 <input v-model="nav_target" type="text" placeholder="Wo willst du hin?" />
