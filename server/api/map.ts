@@ -6,14 +6,14 @@ export default defineEventHandler(() => {
         sources: {
             map_local: {
                 type: "vector",
-                tiles: [process.env.ORIGIN + "/api/tiles/{z}/{x}/{y}"],
+                tiles: [(process.env.ORIGIN || "http://localhost:3000") + "/api/tiles/{z}/{x}/{y}"],
                 maxzoom: 14,
                 minzoom: 0,
                 scheme: "xyz",
             },
         },
-        glyphs: process.env.ORIGIN + "/fonts/{fontstack}/{range}.pbf",
-        sprite: process.env.ORIGIN + "/sprite",
+        glyphs: (process.env.ORIGIN || "http://localhost:3000") + "/fonts/{fontstack}/{range}.pbf",
+        sprite: (process.env.ORIGIN || "http://localhost:3000") + "/sprite",
         version: 8,
     };
 });
