@@ -8,6 +8,9 @@ const { $socket } = useNuxtApp();
 const ready = ref(false);
 const map = ref<Map>();
 const api = new RoutingApi(store.get("navigation.api_key"));
+const target = ref<string>();
+
+var last_updated = Date.now();
 
 onMounted(async () => {
     const mapElement: HTMLElement = await new Promise(async (resolve) => {
@@ -20,29 +23,29 @@ onMounted(async () => {
         }, 100);
     });
 
-    console.log(mapElement);
-
     map.value = new Map({
         container: mapElement,
-        zoom: 18,
-        style: "https://api.maptiler.com/maps/bbed2c88-042e-46ec-8e60-5f5b12cd78e1/style.json?key=iHYc2jkalmprZBsL4zHn",
-        pitch: 60,
+        style: window.location.origin + "/api/map",
         interactive: false,
+        zoom: 18,
+        pitch: 60,
     });
 
     $socket.on("gps", (packet) => {
-        // UBX-NAV-PVT
         if (packet.packet_class == 0x01 && packet.packet_id == 0x07) {
             setTimeout(() => {
+                const speed = packet.gSpeed * 0.0036;
+
                 map.value.easeTo({
                     center: { lat: packet.lat, lng: packet.lon },
                     bearing: packet.headVeh,
-                    duration: 100,
+                    zoom: speed > 70 ? 16 : 18,
+                    duration: Date.now() - last_updated,
                     easing: (num) => num,
                 });
+
+                last_updated = Date.now();
             }, 1);
-            if (packet.gSpeed * 0.0036 > 70) map.value.setZoom(16);
-            else map.value.setZoom(18);
         }
     });
 
@@ -55,7 +58,7 @@ onMounted(async () => {
         <div id="map" class="map">
             <div v-if="ready" class="map-slot">
                 <slot :api="api" :map="map" />
-                <navigation-control />
+                <navigation-control v-model:target="target" />
             </div>
         </div>
     </div>

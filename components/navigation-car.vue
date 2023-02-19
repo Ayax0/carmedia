@@ -46,8 +46,6 @@ export default defineComponent({
             loader.load(
                 model.path,
                 (fbx) => {
-                    console.log("model loaded:", fbx);
-
                     // Filter Mesh
                     fbx.children = fbx.children.filter((children) => children instanceof THREE.Mesh);
 
@@ -111,7 +109,7 @@ export default defineComponent({
                         renderer: renderer,
                     });
                 },
-                (event) => console.log("loading model..." + Math.round((100 / event.total) * event.loaded) + "%"),
+                null,
                 (error) => console.error(error)
             );
         },

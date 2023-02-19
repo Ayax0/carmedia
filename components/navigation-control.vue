@@ -1,35 +1,48 @@
 <script>
 export default {
     props: {
-        value: { type: Boolean, default: false },
+        step: { type: Object, default: undefined },
+        target: { type: String, default: null },
+    },
+    data() {
+        return {
+            _target: null,
+        };
+    },
+    watch: {
+        target: {
+            immediate: true,
+            handler(value) {
+                this._target = value;
+            },
+        },
+        _target(value) {
+            this.$emit("update:target", value);
+        },
     },
 };
 </script>
 
 <template>
     <div class="control-main">
-        <div class="nav-step">
+        <div v-if="step" class="nav-step">
             <div class="step-maneuver">
-                <direction-icon name="continue_right" size="2.5rem" />
-                <div>1.2 km</div>
+                <direction-icon :name="step?.step_maneuver" size="2.5rem" />
+                <div>{{ step?.step_distance }}</div>
             </div>
-            <div class="step-action">
-                <b>Rechts</b> halten, weiter auf <b>E54</b> und der Beschilderung für <b>A5</b>/<wbr /><b>Paris</b>/<wbr /><b>Troyes</b>/<wbr /><b
-                    >Chaumont</b
-                >
-                folgen Lorem ipsum dolor sit amet.
-                <div style="font-size: 0.9em">Gebührenpflichtige Straße</div>
-            </div>
+            <div class="step-action" v-html="step?.action"></div>
             <div class="step-progress">
-                <div class="route-distance">57 km</div>
-                <div class="route-time">31 min</div>
-                <div class="route-arrive">Ankunft um <b>09:11</b></div>
+                <div class="route-distance">{{ step?.distance }}</div>
+                <div class="route-time">{{ step?.time }}</div>
+                <div class="route-arrive">
+                    Ankunft um <b>{{ step?.arrival }}</b>
+                </div>
             </div>
         </div>
-        <div class="nav-action" :class="{ active: value }">
+        <div class="nav-action" :class="{ active: step != undefined }">
             <div class="nav-search">
                 <div v-ripple class="nav-button"><Icon name="mdi:magnify" size="2rem" /></div>
-                <input v-model="nav_target" type="text" placeholder="Wo willst du hin?" />
+                <input v-model="_target" type="text" placeholder="Wo willst du hin?" />
             </div>
             <div class="nav-route">
                 <div v-ripple class="nav-button" @click="resetRoute"><Icon name="mdi:close" size="2rem" /></div>

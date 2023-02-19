@@ -19,8 +19,12 @@ export default defineNuxtConfig({
     modules: ["nuxt-icon"],
     serverHandlers: [
         {
-            route: "/ws",
-            handler: "@/server-middleware/socket",
+            route: "/gps",
+            handler: "@/server/gps",
+        },
+        {
+            route: "/db",
+            handler: "@/server/db",
         },
     ],
     app: {
