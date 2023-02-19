@@ -9,12 +9,4 @@ services:
         ports:
             - "${DB_PORT}:27017"
         volumes:
-            - carmedia-data:/data/db
-        networks:
-            - carmedia-network
-networks:
-    carmedia-network:
-        driver: bridge
-
-volumes:
-    carmedia-data:
+            - /opt/carmedia/db:/data/db
