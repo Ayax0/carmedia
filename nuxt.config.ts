@@ -32,6 +32,13 @@ export default defineNuxtConfig({
             viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0",
         },
     },
+    env: {
+        DB_USERNAME: process.env.DB_USERNAME,
+        DB_PASSWORD: process.env.DB_PASSWORD,
+        DB_HOST: process.env.DB_HOST,
+        DB_PORT: process.env.DB_PORT,
+        ORIGIN: process.env.ORIGIN,
+    },
     hooks: {
         "build:done": async () => {
             if (process.env.NODE_ENV == "production") {
