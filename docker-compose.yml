@@ -1,7 +1,7 @@
 version: "3"
 services:
     db:
-        image: arm7/mongo
+        image: mongo:4.4-rc
         container_name: database
         restart: unless-stopped
         environment:
