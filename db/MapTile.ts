@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { DataTypes, Model } from "sequelize";
+import db from "./";
 
-interface MapTile {
+interface MapTile extends Model {
     x: number;
     y: number;
     z: number;
@@ -8,14 +9,25 @@ interface MapTile {
     timestamp: Date;
 }
 
-const schema = new Schema<MapTile>({
-    x: { type: Number, required: true },
-    y: { type: Number, required: true },
-    z: { type: Number, required: true },
-    tile: { type: Buffer, required: true },
-    timestamp: { type: Date, default: () => Date.now() },
-});
+const schema = db.define<MapTile>(
+    "MapTile",
+    {
+        x: { type: DataTypes.INTEGER, allowNull: false },
+        y: { type: DataTypes.INTEGER, allowNull: false },
+        z: { type: DataTypes.INTEGER, allowNull: false },
+        tile: { type: DataTypes.BLOB, allowNull: false },
+        timestamp: { type: DataTypes.DATE, defaultValue: new Date() },
+    },
+    {
+        indexes: [
+            {
+                unique: true,
+                fields: ["x", "y", "z"],
+            },
+        ],
+        tableName: "maptile",
+    }
+);
+db.sync();
 
-schema.index({ x: 1, y: 1, z: 1 }, { unique: true });
-
-export default model<MapTile>("tile", schema);
+export default schema;

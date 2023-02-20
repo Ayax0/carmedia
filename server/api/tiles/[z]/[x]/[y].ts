@@ -1,6 +1,6 @@
-import MapTile from "@/db/MapTile";
 import { PassThrough } from "stream";
-import mongoose from "mongoose";
+import { isConnected } from "@/db";
+import MapTile from "@/db/MapTile";
 
 export default defineEventHandler(async (event) => {
     const x = parseInt(event.context.params?.x as string);
@@ -8,8 +8,10 @@ export default defineEventHandler(async (event) => {
     const z = parseInt(event.context.params?.z as string);
     var tile;
 
+    const dbState = await isConnected();
+
     if (isNaN(x) || isNaN(y) || isNaN(z)) throw createError({ statusCode: 400, statusMessage: "invalide tile" });
-    if (mongoose.connection.readyState == 1) tile = await MapTile.findOne({ x, y, z });
+    if (dbState) tile = await MapTile.findOne({ where: { x, y, z } });
 
     if (tile) {
         console.log("load tile from cache");
@@ -26,12 +28,13 @@ export default defineEventHandler(async (event) => {
         const readStream = new PassThrough();
         readStream.end(view);
 
-        if (mongoose.connection.readyState == 1)
-            new MapTile({ x, y, z, tile: buffer, timestamp: new Date() })
+        if (dbState) {
+            const cache_tile = await MapTile.create({ x, y, z, tile: buffer, timestamp: new Date() });
+            cache_tile
                 .save()
                 .then(() => console.log("cached => x:", x, "y:", y, "z:", z))
                 .catch(() => console.error("failed to cache => x:", x, "y:", y, "z:", z));
-        else console.error("no caching available");
+        } else console.error("no caching available");
 
         return sendStream(event, readStream);
     }

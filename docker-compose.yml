@@ -1,13 +1,13 @@
 version: "3"
 services:
     db:
-        image: mongo:4.4-rc
-        container_name: database
+        image: postgres
+        container_name: carmedia-database
         restart: unless-stopped
         environment:
-            - MONGO_INITDB_ROOT_USERNAME=${DB_USERNAME}
-            - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
+            - POSTGRES_USER=${DB_USERNAME}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
         ports:
-            - "${DB_PORT}:27017"
+            - "${DB_PORT}:5432"
         volumes:
-            - /opt/carmedia/db:/data/db
+            - /opt/carmedia/db:/var/lib/postgresql/data
