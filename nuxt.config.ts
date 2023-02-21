@@ -22,6 +22,10 @@ export default defineNuxtConfig({
             route: "/gps",
             handler: "@/server/gps",
         },
+        {
+            route: "/mbtiles",
+            handler: "@/server/mbtiles",
+        },
     ],
     app: {
         head: {

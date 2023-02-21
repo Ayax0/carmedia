@@ -9,7 +9,6 @@
         "postinstall": "nuxt prepare"
     },
     "devDependencies": {
-        "@types/pg": "^8.6.6",
         "nuxt": "3.0.0-rc.10",
         "sass": "^1.54.9",
         "sass-loader": "^10.3.1"
@@ -23,16 +22,14 @@
         "fs-extra": "^11.1.0",
         "maplibre-gl": "^2.4.0",
         "nuxt-icon": "^0.1.7",
-        "pg": "^8.9.0",
-        "pg-hstore": "^2.3.4",
         "sequelize": "^6.28.0",
         "serialport": "^10.5.0",
         "simple-git": "^3.15.1",
         "socket.io": "^4.5.3",
         "socket.io-client": "^4.5.3",
+        "sqlite3": "^5.1.4",
         "store-js": "^2.0.4",
         "three": "^0.147.0",
-        "vue3-google-map": "^0.15.0",
         "vue3-whr-ripple-directive": "^1.0.0"
     }
 }

@@ -1,0 +1,915 @@
+{
+    "vector_layers": [
+        {
+            "layer": "water",
+            "geometry": "Polygon",
+            "attributes": [
+                {
+                    "max": 1101816653,
+                    "min": -14638086,
+                    "type": "Number",
+                    "attribute": "id"
+                },
+                {
+                    "type": "String",
+                    "values": ["dock", "river", "lake", "ocean", "swimming_pool"],
+                    "attribute": "class"
+                },
+                {
+                    "type": "Number",
+                    "values": [0, 1],
+                    "attribute": "intermittent"
+                },
+                {
+                    "type": "String",
+                    "values": ["bridge", "tunnel"],
+                    "attribute": "brunnel"
+                }
+            ],
+            "attributeCount": 4
+        },
+        {
+            "layer": "waterway",
+            "geometry": "LineString",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "values": ["stream", "river", "canal", "drain", "ditch"],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "values": ["bridge", "tunnel"],
+                    "attribute": "brunnel"
+                },
+                {
+                    "type": "Number",
+                    "values": [0, 1],
+                    "attribute": "intermittent"
+                }
+            ],
+            "attributeCount": 6
+        },
+        {
+            "layer": "landcover",
+            "geometry": "Polygon",
+            "attributes": [
+                {
+                    "type": "String",
+                    "values": ["farmland", "ice", "wood", "rock", "grass", "wetland", "sand"],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "allotments",
+                        "bare_rock",
+                        "beach",
+                        "bog",
+                        "dune",
+                        "scrub",
+                        "shrubbery",
+                        "farm",
+                        "farmland",
+                        "fell",
+                        "forest",
+                        "garden",
+                        "glacier",
+                        "grass",
+                        "grassland",
+                        "golf_course",
+                        "heath",
+                        "ice_shelf",
+                        "mangrove",
+                        "marsh",
+                        "meadow",
+                        "orchard",
+                        "park",
+                        "plant_nursery",
+                        "recreation_ground",
+                        "reedbed",
+                        "saltern",
+                        "saltmarsh",
+                        "sand",
+                        "scree",
+                        "swamp",
+                        "tidalflat",
+                        "tundra",
+                        "village_green",
+                        "vineyard",
+                        "wet_meadow",
+                        "wetland",
+                        "wood"
+                    ],
+                    "attribute": "subclass"
+                }
+            ],
+            "attributeCount": 2
+        },
+        {
+            "layer": "landuse",
+            "geometry": "Polygon",
+            "attributes": [
+                {
+                    "type": "String",
+                    "values": [
+                        "railway",
+                        "cemetery",
+                        "military",
+                        "residential",
+                        "commercial",
+                        "industrial",
+                        "garages",
+                        "retail",
+                        "bus_station",
+                        "school",
+                        "university",
+                        "kindergarten",
+                        "college",
+                        "library",
+                        "hospital",
+                        "stadium",
+                        "pitch",
+                        "playground",
+                        "track",
+                        "theme_park",
+                        "zoo",
+                        "suburb",
+                        "quarter",
+                        "neighbourhood",
+                        "dam",
+                        "quarry"
+                    ],
+                    "attribute": "class"
+                }
+            ],
+            "attributeCount": 1
+        },
+        {
+            "layer": "mountain_peak",
+            "geometry": ["Point", "LineString"],
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "values": ["peak", "volcano", "saddle", "ridge", "cliff", "arete"],
+                    "attribute": "class"
+                },
+                {
+                    "max": 9825,
+                    "min": -180,
+                    "type": "Number",
+                    "attribute": "ele"
+                },
+                {
+                    "max": 32234,
+                    "min": -591,
+                    "type": "Number",
+                    "attribute": "ele_ft"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "customary_ft"
+                },
+                {
+                    "max": 406,
+                    "min": 1,
+                    "type": "Number",
+                    "attribute": "rank"
+                }
+            ],
+            "attributeCount": 8
+        },
+        {
+            "layer": "park",
+            "geometry": ["Polygon", "Point"],
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "Number",
+                    "attribute": "rank"
+                }
+            ],
+            "attributeCount": 5
+        },
+        {
+            "layer": "boundary",
+            "geometry": "LineString",
+            "attributes": [
+                {
+                    "type": "Number",
+                    "values": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    "attribute": "admin_level"
+                },
+                {
+                    "type": "String",
+                    "attribute": "adm0_l"
+                },
+                {
+                    "type": "String",
+                    "attribute": "adm0_r"
+                },
+                {
+                    "type": "Number",
+                    "values": [0, 1],
+                    "attribute": "disputed"
+                },
+                {
+                    "type": "String",
+                    "attribute": "disputed_name"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "AM",
+                        "BF",
+                        "BJ",
+                        "BT",
+                        "CN",
+                        "EG",
+                        "EH",
+                        "ES",
+                        "ET",
+                        "FR",
+                        "GY",
+                        "IL",
+                        "IN",
+                        "IT",
+                        "JP",
+                        "KE",
+                        "KG",
+                        "MW",
+                        "NP",
+                        "PK",
+                        "PS",
+                        "RU",
+                        "SD",
+                        "SS",
+                        "SY",
+                        "TR",
+                        "TZ",
+                        "UA",
+                        "UN",
+                        "XA",
+                        "XK",
+                        "XN",
+                        "XS"
+                    ],
+                    "attribute": "claimed_by"
+                },
+                {
+                    "type": "Number",
+                    "values": [0, 1],
+                    "attribute": "maritime"
+                }
+            ],
+            "attributeCount": 7
+        },
+        {
+            "layer": "aeroway",
+            "geometry": ["LineString", "Polygon", "Point"],
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "ref"
+                },
+                {
+                    "type": "String",
+                    "values": ["aerodrome", "heliport", "runway", "helipad", "taxiway", "apron", "gate"],
+                    "attribute": "class"
+                }
+            ],
+            "attributeCount": 2
+        },
+        {
+            "layer": "transportation",
+            "geometry": ["LineString", "Polygon"],
+            "attributes": [
+                {
+                    "type": "String",
+                    "values": [
+                        "motorway",
+                        "trunk",
+                        "primary",
+                        "secondary",
+                        "tertiary",
+                        "minor",
+                        "path",
+                        "service",
+                        "track",
+                        "raceway",
+                        "busway",
+                        "bus_guideway",
+                        "ferry",
+                        "motorway_construction",
+                        "trunk_construction",
+                        "primary_construction",
+                        "secondary_construction",
+                        "tertiary_construction",
+                        "minor_construction",
+                        "path_construction",
+                        "service_construction",
+                        "track_construction",
+                        "raceway_construction",
+                        "transit",
+                        "storage_tank",
+                        "pier",
+                        "courtyard",
+                        "rail",
+                        "bridge",
+                        "aerialway"
+                    ],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "funicular",
+                        "cycleway",
+                        "stop_area",
+                        "light_rail",
+                        "narrow_gauge",
+                        "yes",
+                        "t-bar",
+                        "path",
+                        "platter",
+                        "platform",
+                        "corridor",
+                        "pedestrian",
+                        "preserved",
+                        "no",
+                        "mixed_lift",
+                        "subway",
+                        "stop_position",
+                        "j-bar",
+                        "chair_lift",
+                        "bridleway",
+                        "drag_lift",
+                        "steps",
+                        "tram",
+                        "platform_access",
+                        "monorail",
+                        "rail",
+                        "cable_car",
+                        "disused",
+                        "gondola",
+                        "footway",
+                        "entrance_pass",
+                        "entrance",
+                        "station"
+                    ],
+                    "attribute": "subclass"
+                },
+                {
+                    "type": "String",
+                    "attribute": "network"
+                },
+                {
+                    "type": "String",
+                    "values": ["bridge", "tunnel", "ford"],
+                    "attribute": "brunnel"
+                },
+                {
+                    "type": "Number",
+                    "values": [1, -1],
+                    "attribute": "oneway"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "ramp"
+                },
+                {
+                    "type": "String",
+                    "values": ["spur", "yard", "siding", "crossover", "driveway", "alley", "parking_aisle"],
+                    "attribute": "service"
+                },
+                {
+                    "type": "String",
+                    "values": ["no"],
+                    "attribute": "access"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "toll"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "expressway"
+                },
+                {
+                    "max": 100,
+                    "min": -112,
+                    "type": "Number",
+                    "attribute": "layer"
+                },
+                {
+                    "max": 12,
+                    "min": -19,
+                    "type": "Number",
+                    "attribute": "level"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "indoor"
+                },
+                {
+                    "type": "String",
+                    "attribute": "bicycle"
+                },
+                {
+                    "type": "String",
+                    "attribute": "foot"
+                },
+                {
+                    "type": "String",
+                    "attribute": "horse"
+                },
+                {
+                    "type": "String",
+                    "attribute": "mtb_scale"
+                },
+                {
+                    "type": "String",
+                    "values": ["paved", "unpaved"],
+                    "attribute": "surface"
+                }
+            ],
+            "attributeCount": 18
+        },
+        {
+            "layer": "building",
+            "geometry": "Polygon",
+            "attributes": [
+                {
+                    "max": 3467,
+                    "min": -192,
+                    "type": "Number",
+                    "attribute": "render_height"
+                },
+                {
+                    "max": 583,
+                    "min": -26,
+                    "type": "Number",
+                    "attribute": "render_min_height"
+                },
+                {
+                    "type": "String",
+                    "attribute": "colour"
+                },
+                {
+                    "type": "Boolean",
+                    "values": [true],
+                    "attribute": "hide_3d"
+                }
+            ],
+            "attributeCount": 4
+        },
+        {
+            "layer": "water_name",
+            "geometry": ["Point", "LineString"],
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "values": ["lake", "sea", "ocean"],
+                    "attribute": "class"
+                },
+                {
+                    "type": "Number",
+                    "values": [0, 1],
+                    "attribute": "intermittent"
+                }
+            ],
+            "attributeCount": 5
+        },
+        {
+            "layer": "transportation_name",
+            "geometry": "LineString",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "attribute": "ref"
+                },
+                {
+                    "max": 147,
+                    "min": 1,
+                    "type": "Number",
+                    "attribute": "ref_length"
+                },
+                {
+                    "type": "String",
+                    "values": ["us-interstate", "us-highway", "us-state", "ca-transcanada", "gb-motorway", "gb-trunk", "road (default)"],
+                    "attribute": "network"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "motorway",
+                        "trunk",
+                        "primary",
+                        "secondary",
+                        "tertiary",
+                        "minor",
+                        "service",
+                        "track",
+                        "path",
+                        "raceway",
+                        "motorway_construction",
+                        "trunk_construction",
+                        "primary_construction",
+                        "secondary_construction",
+                        "tertiary_construction",
+                        "minor_construction",
+                        "service_construction",
+                        "track_construction",
+                        "path_construction",
+                        "raceway_construction",
+                        "motorway_junction",
+                        "bus_guideway",
+                        "busway",
+                        "ferry"
+                    ],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "path",
+                        "footway",
+                        "cycleway",
+                        "pedestrian",
+                        "junction",
+                        "steps",
+                        "residential",
+                        "motorway",
+                        "bridleway",
+                        "ferry",
+                        "trunk",
+                        "chair_lift",
+                        "primary",
+                        "secondary",
+                        "tertiary",
+                        "corridor",
+                        "platter",
+                        "drag_lift",
+                        "t-bar",
+                        "minor",
+                        "unclassified",
+                        "motorway_link",
+                        "gondola",
+                        "service",
+                        "yes",
+                        "cable_car",
+                        "trunk_link",
+                        "living_street",
+                        "widening",
+                        "track",
+                        "highway",
+                        "primary_link",
+                        "no",
+                        "j-bar",
+                        "secondary_link",
+                        "mixed_lift",
+                        "proposed",
+                        "road",
+                        "tertiary_link",
+                        "rail",
+                        "construction",
+                        "rest_area",
+                        "platform",
+                        "motoway",
+                        "bridge",
+                        "busway",
+                        "services",
+                        "industrial"
+                    ],
+                    "attribute": "subclass"
+                },
+                {
+                    "type": "String",
+                    "values": ["bridge", "tunnel", "ford"],
+                    "attribute": "brunnel"
+                },
+                {
+                    "max": 8,
+                    "min": -6,
+                    "type": "Number",
+                    "attribute": "level"
+                },
+                {
+                    "max": 10,
+                    "min": -17,
+                    "type": "Number",
+                    "attribute": "layer"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "indoor"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_1"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_2"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_3"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_4"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_5"
+                },
+                {
+                    "type": "String",
+                    "attribute": "route_6"
+                }
+            ],
+            "attributeCount": 18
+        },
+        {
+            "layer": "place",
+            "geometry": "Point",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "Number",
+                    "values": [2, 3, 4, 5, 6],
+                    "attribute": "capital"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "continent",
+                        "country",
+                        "state",
+                        "province",
+                        "city",
+                        "town",
+                        "village",
+                        "hamlet",
+                        "suburb",
+                        "quarter",
+                        "neighbourhood",
+                        "isolated_dwelling",
+                        "island"
+                    ],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "attribute": "iso_a2"
+                },
+                {
+                    "max": 54,
+                    "min": 0,
+                    "type": "Number",
+                    "attribute": "rank"
+                }
+            ],
+            "attributeCount": 7
+        },
+        {
+            "layer": "housenumber",
+            "geometry": "Point",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "housenumber"
+                }
+            ],
+            "attributeCount": 1
+        },
+        {
+            "layer": "poi",
+            "geometry": "Point",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "values": [
+                        "shop",
+                        "town_hall",
+                        "golf",
+                        "fast_food",
+                        "park",
+                        "bus",
+                        "railway",
+                        "aerialway",
+                        "entrance",
+                        "campsite",
+                        "laundry",
+                        "grocery",
+                        "library",
+                        "college",
+                        "lodging",
+                        "ice_cream",
+                        "post",
+                        "cafe",
+                        "school",
+                        "alcohol_shop",
+                        "bar",
+                        "harbor",
+                        "car",
+                        "hospital",
+                        "cemetery",
+                        "attraction",
+                        "beer",
+                        "music",
+                        "stadium",
+                        "art_gallery",
+                        "clothing_store",
+                        "swimming",
+                        "castle",
+                        "atm"
+                    ],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "attribute": "subclass"
+                },
+                {
+                    "max": 1107,
+                    "min": 1,
+                    "type": "Number",
+                    "attribute": "rank"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "agg_stop"
+                },
+                {
+                    "max": 1554,
+                    "min": -26,
+                    "type": "Number",
+                    "attribute": "level"
+                },
+                {
+                    "max": 60,
+                    "min": -13,
+                    "type": "Number",
+                    "attribute": "layer"
+                },
+                {
+                    "type": "Number",
+                    "values": [1],
+                    "attribute": "indoor"
+                }
+            ],
+            "attributeCount": 10
+        },
+        {
+            "layer": "aerodrome_label",
+            "geometry": "Point",
+            "attributes": [
+                {
+                    "type": "String",
+                    "attribute": "name"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_en"
+                },
+                {
+                    "type": "String",
+                    "attribute": "name_de"
+                },
+                {
+                    "type": "String",
+                    "values": ["international", "public", "regional", "military", "private", "other"],
+                    "attribute": "class"
+                },
+                {
+                    "type": "String",
+                    "attribute": "iata"
+                },
+                {
+                    "type": "String",
+                    "attribute": "icao"
+                },
+                {
+                    "max": 6752,
+                    "min": -378,
+                    "type": "Number",
+                    "attribute": "ele"
+                },
+                {
+                    "max": 22152,
+                    "min": -1240,
+                    "type": "Number",
+                    "attribute": "ele_ft"
+                }
+            ],
+            "attributeCount": 8
+        },
+        {
+            "layer": "globallandcover",
+            "geometry": "Polygon",
+            "attributes": [
+                {
+                    "type": "String",
+                    "values": ["crop", "grass", "scrub", "tree", "forest", "snow"],
+                    "attribute": "class"
+                }
+            ],
+            "attributeCount": 1
+        }
+    ]
+}
