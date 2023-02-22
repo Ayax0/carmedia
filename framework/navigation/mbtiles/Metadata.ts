@@ -2,14 +2,14 @@ import { DataTypes, Model } from "sequelize";
 import db from "./";
 
 interface Metadata extends Model {
-    key: string;
+    name: string;
     value: string;
 }
 
 const schema = db.define<Metadata>(
     "metadata",
     {
-        key: { type: DataTypes.STRING, primaryKey: true },
+        name: { type: DataTypes.STRING, primaryKey: true },
         value: { type: DataTypes.STRING },
     },
     { tableName: "metadata", timestamps: false }
