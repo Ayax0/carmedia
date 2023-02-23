@@ -16,6 +16,15 @@ var api = new RoutingApi(store.get("navigation.api_key"));
 
 var last_updated = Date.now();
 
+var searchTimeout;
+watch(target, (value) => {
+    if (searchTimeout) clearTimeout(searchTimeout);
+    if (value)
+        searchTimeout = setTimeout(() => {
+            api.autocomplete(value, { bias: "countrycode:ch", lang: "de" }).then((res) => console.log(res));
+        }, 3000);
+});
+
 onMounted(async () => {
     const mapElement: HTMLElement = await new Promise(async (resolve) => {
         var timer = setInterval(() => {
@@ -33,6 +42,7 @@ onMounted(async () => {
         interactive: false,
         zoom: 18,
         pitch: 60,
+        center: { lat: 47.03366628206786, lon: 8.273711278740961 },
     });
 
     $socket.on("gps", (packet) => {
@@ -56,6 +66,8 @@ onMounted(async () => {
     });
 
     function calcCurrentStep() {
+        if (!route) return;
+
         const center = map.getCenter();
         const distanceMap: Array<{ index: number; distance: number }> = [];
         route.features.forEach((feature: any) => {

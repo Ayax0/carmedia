@@ -1,3 +1,5 @@
+import compareDesc from "date-fns/compareDesc";
+
 export default class RoutingApi {
     private api_key: string;
 
@@ -34,6 +36,21 @@ export default class RoutingApi {
         }
 
         return fetch("https://api.geoapify.com/v1/routing?" + params).then((result) => result.json());
+    }
+
+    autocomplete(text: string, options?: AutocompleteOptions): Promise<Array<AutocompleteResult>> {
+        const params = new URLSearchParams({
+            apiKey: this.api_key,
+            text: text,
+            format: options?.format || "geojson",
+        });
+
+        params.append("lang", options?.lang || "de");
+        if (options?.type) params.append("type", options.type);
+        if (options?.filter) params.append("filter", options.filter);
+        if (options?.bias) params.append("bias", options.bias);
+
+        return fetch("https://api.geoapify.com/v1/geocode/autocomplete?" + params).then((result) => result.json());
     }
 }
 
@@ -252,5 +269,52 @@ interface ResultFeature {
         toll: true | null;
         ferry: true | null;
         country_code: Array<string>;
+    };
+}
+
+interface AutocompleteOptions {
+    type?: "country" | "state" | "city" | "postalcode" | "street" | "amenity" | "locality";
+    lang?: string;
+    filter?: string;
+    bias?: string;
+    format?: "json" | "xml" | "geojson";
+}
+
+interface AutocompleteResult {
+    name: string;
+    country: string;
+    country_code: string;
+    state: string;
+    state_code: string;
+    county: string;
+    county_code: string;
+    postcode: string;
+    city: string;
+    street: string;
+    housenumber: string;
+    lat: number;
+    lon: number;
+    formatted: string;
+    address_line1: string;
+    address_line2: string;
+    result_type: string;
+    distance: number;
+    rank: {
+        importance: number;
+        confidence: number;
+        confidence_city_level: number;
+        match_type: string;
+    };
+    datasource: string;
+    category: string;
+    timezone: {
+        name: string;
+        name_alt: string;
+        offset_STD: string;
+        offset_STD_seconds: number;
+        offset_DST: string;
+        offset_DST_seconds: number;
+        abbreviation_STD: string;
+        abbreviation_DST: string;
     };
 }
