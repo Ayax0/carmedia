@@ -448,6 +448,19 @@
         }
     },
     {
+        "id": "road_oneway",
+        "type": "symbol",
+        "source": "map_local",
+        "source-layer": "transportation",
+        "filter": ["all", ["in", "oneway", 1, -1], ["in", "class", "minor", "primary", "secondary", "tertiary"]],
+        "layout": {
+            "icon-image": "oneway",
+            "symbol-placement": "line-center",
+            "icon-rotate": ["match", ["get", "oneway"], 1, 90, -90],
+            "text-font": ["RobotoBlack"]
+        }
+    },
+    {
         "id": "ferry",
         "type": "line",
         "source": "map_local",
