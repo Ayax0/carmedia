@@ -2,13 +2,17 @@
 import store from "store-js";
 import { Map } from "maplibre-gl";
 import RoutingApi from "@/framework/navigation/RoutingApi";
+import { getDistance } from "geolib";
 
 const { $socket } = useNuxtApp();
 
 const ready = ref(false);
-const map = ref<Map>();
-const api = new RoutingApi(store.get("navigation.api_key"));
 const target = ref<string>();
+var route: any;
+var route_index = 0;
+
+var map: Map;
+var api = new RoutingApi(store.get("navigation.api_key"));
 
 var last_updated = Date.now();
 
@@ -23,7 +27,7 @@ onMounted(async () => {
         }, 100);
     });
 
-    map.value = new Map({
+    map = new Map({
         container: mapElement,
         style: window.location.origin + "/api/map",
         interactive: false,
@@ -36,18 +40,66 @@ onMounted(async () => {
             setTimeout(() => {
                 const speed = packet.gSpeed * 0.0036;
 
-                map.value.easeTo({
+                map.easeTo({
                     center: { lat: packet.lat, lng: packet.lon },
                     bearing: packet.headVeh,
-                    zoom: speed > 70 ? 16 : 18,
+                    zoom: speed > 65 ? 16 : 18,
                     duration: Date.now() - last_updated,
                     easing: (num) => num,
                 });
+
+                calcCurrentStep();
 
                 last_updated = Date.now();
             }, 1);
         }
     });
+
+    function calcCurrentStep() {
+        const center = map.getCenter();
+        const distanceMap: Array<{ index: number; distance: number }> = [];
+        route.features.forEach((feature: any) => {
+            feature.geometry.coordinates.forEach((position: Array<number>) => {
+                const distance = getDistance(center, { lat: position[1], lon: position[0] });
+                distanceMap.push({ index: feature.properties.index, distance });
+            });
+        });
+        distanceMap.sort((a, b) => a.distance - b.distance);
+        route_index = distanceMap[0].index;
+
+        route.features.forEach((feature: any) => map.setFeatureState({ id: feature.id, source: "route" }, { current_index: route_index }));
+    }
+
+    function setTunnel(state: boolean, duration = 1000) {
+        map.setPaintProperty("building", "fill-opacity-transition", { duration });
+        map.setPaintProperty("building_3d", "fill-extrusion-opacity-transition", { duration });
+        map.setPaintProperty("road_name", "text-opacity-transition", { duration });
+        map.setPaintProperty("road_service", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_major", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_minor", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_service_outline", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_private", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_major_outline", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_minor_outline", "line-opacity-transition", { duration });
+        map.setPaintProperty("road_oneway", "icon-opacity-transition", { duration });
+        map.setPaintProperty("railway_hatching", "line-opacity-transition", { duration });
+        map.setPaintProperty("railway", "line-opacity-transition", { duration });
+
+        map.setPaintProperty("building", "fill-opacity", state ? 0 : 1);
+        map.setPaintProperty("building_3d", "fill-extrusion-opacity", state ? 0 : 0.9);
+        map.setPaintProperty("road_name", "text-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_service", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_major", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_minor", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_service_outline", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_private", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_major_outline", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_minor_outline", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("road_oneway", "icon-opacity", state ? 0 : 1);
+        map.setPaintProperty("railway_hatching", "line-opacity", state ? 0 : 1);
+        map.setPaintProperty("railway", "line-opacity", state ? 0 : 1);
+        map.setLayoutProperty("poi", "visibility", state ? "none" : "visible");
+    }
 
     ready.value = true;
 });

@@ -20,6 +20,7 @@
         "date-fns": "^2.29.3",
         "express": "^4.18.2",
         "fs-extra": "^11.1.0",
+        "geolib": "^3.3.3",
         "maplibre-gl": "^2.4.0",
         "nuxt-icon": "^0.1.7",
         "sequelize": "^6.28.0",

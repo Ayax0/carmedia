@@ -24,8 +24,7 @@
                 ["match", ["get", "class"], ["canal", "river"], 0.1, 0],
                 20,
                 ["match", ["get", "class"], ["canal", "river"], 8, 3]
-            ],
-            "line-opacity": ["interpolate", ["linear"], ["zoom"], 8, 0, 8.5, 1]
+            ]
         }
     },
     {
@@ -514,7 +513,8 @@
             "fill-extrusion-height": {
                 "type": "identity",
                 "property": "render_height"
-            }
+            },
+            "fill-extrusion-opacity": 0.9
         }
     },
     {
