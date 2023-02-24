@@ -1,4 +1,5 @@
 import Metadata from "@/framework/navigation/mbtiles/Metadata";
+import Tiles from "@/framework/navigation/mbtiles/Tiles";
 import db from "@/framework/navigation/mbtiles";
 
 import vector_layers from "@/framework/navigation/mbtiles/vector_layers.json";
@@ -7,6 +8,7 @@ async function init() {
     await db.sync();
 
     console.log("initializing map cache");
+    console.log("cached tiles:", await Tiles.count());
     await Metadata.upsert({ name: "name", value: "Carmedia Tileset" });
     await Metadata.upsert({ name: "format", value: "pbf" });
     await Metadata.upsert({ name: "bounds", value: "-180.0,-85,180,85" });
