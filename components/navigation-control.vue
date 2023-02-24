@@ -1,6 +1,7 @@
 <script>
 export default {
     props: {
+        api: { type: Object, required: true },
         step: { type: Object, default: undefined },
         target: { type: String, default: null },
     },
@@ -41,8 +42,8 @@ export default {
         </div>
         <div class="nav-action" :class="{ active: step != undefined }">
             <div class="nav-search">
-                <div v-ripple class="nav-button"><Icon name="mdi:magnify" size="2rem" /></div>
-                <input v-model="_target" type="text" placeholder="Wo willst du hin?" />
+                <div v-ripple class="nav-button" @click="$emit('submit', _target)"><Icon name="mdi:magnify" size="2rem" /></div>
+                <input v-model="_target" type="text" placeholder="Wo willst du hin?" @keypress.enter="$emit('submit', _target)" />
             </div>
             <div class="nav-route">
                 <div v-ripple class="nav-button" @click="resetRoute"><Icon name="mdi:close" size="2rem" /></div>

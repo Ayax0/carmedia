@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
         const readStream = new PassThrough();
         readStream.end(view);
 
-        sendStream(event, readStream);
+        return sendStream(event, readStream);
     } else {
         const result = await fetch(`https://api.maptiler.com/tiles/v3/${z}/${x}/${y}.pbf?key=iHYc2jkalmprZBsL4zHn`);
         const buffer = Buffer.from(await result.arrayBuffer());
@@ -24,12 +24,12 @@ export default defineEventHandler(async (event) => {
         const readStream = new PassThrough();
         readStream.end(view);
 
-        sendStream(event, readStream);
-
         const cache_tile = await Tiles.create({ zoom_level: z, tile_column: x, tile_row: y, tile_data: buffer });
         cache_tile
             .save()
             .then(() => console.log("cached => x:", x, "y:", y, "z:", z))
             .catch(() => console.error("failed to cache => x:", x, "y:", y, "z:", z));
+
+        return sendStream(event, readStream);
     }
 });

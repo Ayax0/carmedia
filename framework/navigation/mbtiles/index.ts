@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize";
 
-const db = new Sequelize({ dialect: "sqlite", storage: "./map.mbtiles", logging: false });
+const db = new Sequelize({ dialect: "sqlite", storage: "./map.mbtiles", logging: false, sync: { logging: true } });
 
 export default db;
 

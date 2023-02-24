@@ -7,7 +7,7 @@ export default class RoutingApi {
         this.api_key = api_key;
     }
 
-    route<Type = GeoJSONResult | JSONResult | XMLResult>(from: LatLon, to: LatLon, options?: RoutingOptions): Promise<Type> {
+    route<Type = GeoJSONRouteResult | JSONRouteResult | XMLRouteResult>(from: LatLon, to: LatLon, options?: RoutingOptions): Promise<Type> {
         const params = new URLSearchParams({
             apiKey: this.api_key,
             waypoints: `${from.lat},${from.lon}|${to.lat},${to.lon}`,
@@ -51,6 +51,28 @@ export default class RoutingApi {
         if (options?.bias) params.append("bias", options.bias);
 
         return fetch("https://api.geoapify.com/v1/geocode/autocomplete?" + params).then((result) => result.json());
+    }
+
+    geocode(text: string, options?: GeocodeOptions): Promise<Array<GeocodeResult>> {
+        const params = new URLSearchParams({
+            apiKey: this.api_key,
+            text: text,
+            format: options?.format || "geojson",
+        });
+
+        params.append("lang", options?.lang || "de");
+        params.append("limit", options?.limit?.toString() || "3");
+        if (options?.name) params.append("name", options.name);
+        if (options?.housenumber) params.append("housenumber", options.housenumber);
+        if (options?.street) params.append("street", options.street);
+        if (options?.postcode) params.append("postcode", options.postcode.toString());
+        if (options?.city) params.append("city", options.city);
+        if (options?.state) params.append("state", options.state);
+        if (options?.country) params.append("country", options.country);
+        if (options?.filter) params.append("filter", options.filter);
+        if (options?.bias) params.append("bias", options.bias);
+
+        return fetch("https://api.geoapify.com/v1/geocode/search?" + params).then((result) => result.json());
     }
 }
 
@@ -122,18 +144,18 @@ interface LatLon {
     lon: number;
 }
 
-export interface GeoJSONResult {
+export interface GeoJSONRouteResult {
     type: "FeatureCollection";
     properties: RoutingOptions;
     features: Array<ResultFeature>;
 }
 
-export interface JSONResult {
+export interface JSONRouteResult {
     properties: RoutingOptions;
     features: Array<ResultFeature>;
 }
 
-export interface XMLResult {
+export interface XMLRouteResult {
     properties: RoutingOptions;
     features: Array<ResultFeature>;
 }
@@ -145,14 +167,14 @@ interface ResultFeature {
     geometry:
         | {
               type: GeometryType;
-              coordinates: Array<any>;
+              coordinates: Array<Array<Array<number>>>;
           }
         | {
               type: "GeometryCollection";
               geometries: [
                   {
                       type: GeometryType;
-                      coordinates: Array<any>;
+                      coordinates: Array<Array<Array<number>>>;
                   }
               ];
           };
@@ -281,6 +303,61 @@ interface AutocompleteOptions {
 }
 
 interface AutocompleteResult {
+    name: string;
+    country: string;
+    country_code: string;
+    state: string;
+    state_code: string;
+    county: string;
+    county_code: string;
+    postcode: string;
+    city: string;
+    street: string;
+    housenumber: string;
+    lat: number;
+    lon: number;
+    formatted: string;
+    address_line1: string;
+    address_line2: string;
+    result_type: string;
+    distance: number;
+    rank: {
+        importance: number;
+        confidence: number;
+        confidence_city_level: number;
+        match_type: string;
+    };
+    datasource: string;
+    category: string;
+    timezone: {
+        name: string;
+        name_alt: string;
+        offset_STD: string;
+        offset_STD_seconds: number;
+        offset_DST: string;
+        offset_DST_seconds: number;
+        abbreviation_STD: string;
+        abbreviation_DST: string;
+    };
+}
+
+interface GeocodeOptions {
+    name?: string;
+    housenumber?: string;
+    street?: string;
+    postcode?: number;
+    city?: string;
+    state?: string;
+    country?: string;
+    type?: "country" | "state" | "city" | "postcode" | "street" | "amenity" | "locality";
+    lang?: string;
+    limit?: number;
+    filter?: string;
+    bias?: string;
+    format?: "json" | "xml" | "geojson";
+}
+
+interface GeocodeResult {
     name: string;
     country: string;
     country_code: string;
