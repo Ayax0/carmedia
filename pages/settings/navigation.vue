@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 import store from "store-js";
 import models from "@/framework/models";
 
@@ -11,6 +11,7 @@ export default {
             color: "hsl(30, 100%, 50%)",
             gps_status: null,
             gps_position: null,
+            recording_state: null,
         };
     },
     computed: {
@@ -60,6 +61,10 @@ export default {
             if (type == 5) return "time only fix";
             return "unknown";
         },
+        triggerRecording() {
+            $fetch("/api/gps/recording", { method: "POST" });
+            $fetch("/api/gps/recording").then((res) => (this.recording_state = res));
+        },
     },
     mounted() {
         this.api_key = store.get("navigation.api_key");
@@ -76,6 +81,8 @@ export default {
                 this.gps_position = packet;
             }
         });
+
+        $fetch("/api/gps/recording").then((res) => (this.recording_state = res));
     },
 };
 </script>
@@ -121,6 +128,15 @@ export default {
                 <th>{{ mapFixType(gps_position?.fixType) }}</th>
             </tr>
         </table>
+        <button @click="triggerRecording">{{ recording_state?.status ? "GPS Aufnahme stoppen" : "GPS Aufnahme starten" }}</button>
+        <table>
+            <tr>
+                <th>Aufnahmen</th>
+            </tr>
+            <tr v-for="recording in recording_state?.recordings">
+                <td>{{ recording }}</td>
+            </tr>
+        </table>
     </div>
 </template>
 
@@ -142,7 +158,7 @@ export default {
     td,
     th {
         width: 50%;
-        border: 1px solid #1b1b1b;
+        border: 1px solid #111111;
         text-align: left;
         padding: 8px;
     }
@@ -155,5 +171,14 @@ export default {
 #nav-car {
     width: 100%;
     height: 250px;
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px solid $primary;
+    background: transparent;
+    color: white;
+    font-size: 16px;
 }
 </style>

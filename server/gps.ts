@@ -1,7 +1,5 @@
 import { Server } from "socket.io";
-import { Socket } from "net";
-import { SerialPort } from "serialport";
-import { UBXParser } from "@nextlvlup/ubx-parser";
+import gps from "@/framework/navigation/gps";
 
 const io = new Server(3001, {
     cors: {
@@ -28,24 +26,6 @@ io.on("connect", (socket) => {
     });
 });
 
-const gnss_parser = new UBXParser();
+gps.on("data", (data) => io.emit("gps", data));
 
-if (process.env.NODE_ENV !== "production") {
-    const client = new Socket();
-    client.connect({ host: process.env.GPS_HOST, port: Number.parseInt(process.env.GPS_PORT) }, () => console.log("gps connected"));
-    client.on("data", (buffer) => gnss_parser.parse(buffer));
-} else {
-    try {
-        const port = new SerialPort({ path: "/dev/ttyS0", baudRate: 460800 }, () => console.log("gps connected"));
-        port.on("data", (data) => gnss_parser.parse(data));
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-gnss_parser.on("data", (data) => io.emit("gps", data));
-
-export default function (req, res, next) {
-    res.statusCode = 200;
-    res.end();
-}
+export default defineEventHandler(() => "ok");
