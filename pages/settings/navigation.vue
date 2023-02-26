@@ -77,7 +77,7 @@ onMounted(async () => {
 
 <template>
     <div class="main">
-        <vtextfield v-model="api_key.value" title="Google API Key" />
+        <vtextfield v-model="api_key.value" title="Geoapify API Key" />
         <div class="title">Auto Model</div>
         <vselect v-model="model.value" :items="models" item-text="name" />
         <color-picker v-model="color.value" />

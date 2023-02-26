@@ -1,7 +1,6 @@
 <script>
 export default {
     props: {
-        api: { type: Object, required: true },
         step: { type: Object, default: undefined },
         target: { type: String, default: null },
     },
@@ -29,11 +28,11 @@ export default {
         <div v-if="step" class="nav-step">
             <div class="step-maneuver">
                 <direction-icon :name="step?.step_maneuver" size="2.5rem" />
-                <div>{{ step?.step_distance }}</div>
+                <div>{{ step.properties.distance }}</div>
             </div>
             <div class="step-action" v-html="step?.action"></div>
             <div class="step-progress">
-                <div class="route-distance">{{ step?.distance }}</div>
+                <div class="route-distance">{{ step.properties?.distance }}m</div>
                 <div class="route-time">{{ step?.time }}</div>
                 <div class="route-arrive">
                     Ankunft um <b>{{ step?.arrival }}</b>

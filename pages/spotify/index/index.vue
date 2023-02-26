@@ -12,13 +12,11 @@ export default {
         };
     },
     mounted() {
-        if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
-            const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+        const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
 
-            activeAudioPlayer.api.instance.get("/me/playlists?limit=50").then((res) => (this.playlists = res.data));
-            activeAudioPlayer.api.instance.get("/me/shows?limit=50").then((res) => (this.shows = res.data));
-            activeAudioPlayer.api.instance.get("/browse/featured-playlists").then((res) => (this.featured = res.data));
-        } else navigateTo("/app");
+        activeAudioPlayer.api.instance.get("/me/playlists?limit=50").then((res) => (this.playlists = res.data));
+        activeAudioPlayer.api.instance.get("/me/shows?limit=50").then((res) => (this.shows = res.data));
+        activeAudioPlayer.api.instance.get("/browse/featured-playlists").then((res) => (this.featured = res.data));
     },
 };
 </script>
@@ -28,11 +26,11 @@ export default {
         <template v-if="playlists && playlists.items && playlists.items.length > 0">
             <div class="title">Deine Playlists</div>
             <div class="category">
-                <spotify-tile 
-                    color="linear-gradient(135deg, #470ef5 0%, #8D8CE5 100%)" 
-                    icon="mdi:bookmark" 
-                    title="Lieblingssongs" 
-                    @click="navigateTo('/spotify/liked')" 
+                <spotify-tile
+                    color="linear-gradient(135deg, #470ef5 0%, #8D8CE5 100%)"
+                    icon="mdi:bookmark"
+                    title="Lieblingssongs"
+                    @click="navigateTo('/spotify/liked')"
                 />
                 <spotify-tile
                     v-for="item in playlists.items"

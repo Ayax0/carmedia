@@ -1,4 +1,4 @@
-import compareDesc from "date-fns/compareDesc";
+import { LngLat } from "maplibre-gl";
 
 export default class RoutingApi {
     private api_key: string;
@@ -76,6 +76,10 @@ export default class RoutingApi {
     }
 }
 
+export function convertLngLat(pos: LngLat): LatLon {
+    return { lat: pos.lat, lon: pos.lng };
+}
+
 type RoutingMode =
     | "drive"
     | "light_truck"
@@ -97,7 +101,7 @@ type RoutingMode =
 
 type RoutingUnit = "metric" | "imperial";
 
-type RoutingDetails = ["instruction_details" | "route_details" | "elevation"];
+type RoutingDetails = "instruction_details" | "route_details" | "elevation";
 
 interface RoutingOptions {
     mode?: RoutingMode;
@@ -134,12 +138,12 @@ interface RoutingOptions {
         | "uk"
         | null;
     avoid?: [{ type: "tolls" | "ferries" | "highways"; importance: number } | { type: "location"; lat: number; lon: number }] | null;
-    details?: RoutingDetails | null;
+    details?: Array<RoutingDetails> | null;
     traffic?: "free_flow" | "approximated" | null;
     format?: "geojson" | "json" | "xml" | null;
 }
 
-interface LatLon {
+export interface LatLon {
     lat: number;
     lon: number;
 }
@@ -187,7 +191,7 @@ interface ResultFeature {
             }
         ];
         units: RoutingUnit;
-        details: RoutingDetails;
+        details: Array<RoutingDetails>;
         distance: number;
         distance_units: string;
         time: number;
