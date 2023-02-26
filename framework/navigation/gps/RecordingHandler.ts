@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import gps from "@/framework/navigation/gps";
 
 export default class RecordingHandler {
     private filestream: fs.WriteStream;

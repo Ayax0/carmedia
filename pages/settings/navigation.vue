@@ -1,99 +1,87 @@
-<script lang="ts">
-import store from "store-js";
-import models from "@/framework/models";
+<script lang="ts" setup>
+import NavigationCar from "@/framework/navigation/NavigationCar";
+import models, { Model } from "@/framework/models";
+import Setting from "@/framework/Setting";
+import { awaitElement } from "@/framework/utils";
+import { UBX_ESF_STATUS_DATA, UBX_NAV_PVT_DATA } from "@nextlvlup/ubx-parser/dist/types";
 
-export default {
-    name: "NavigationSettingsPage",
-    data() {
-        return {
-            api_key: null,
-            model: models[0],
-            color: "hsl(30, 100%, 50%)",
-            gps_status: null,
-            gps_position: null,
-            recording_state: null,
-        };
-    },
-    computed: {
-        models() {
-            return models;
-        },
-    },
-    watch: {
-        api_key(value) {
-            store.set("navigation.api_key", value);
-        },
-        model(value) {
-            store.set("navigation.model", value.name);
-            this.color = value.color.primary;
-        },
-        color(value) {
-            store.set("navigation.model.primary", value);
-            this.model.color.primary = value;
-        },
-    },
-    methods: {
-        ready({ renderer, model, camera, scene }) {
-            renderer.setAnimationLoop((time) => {
-                model.rotation.y = time / 2000;
-                renderer.render(scene, camera);
-            });
-        },
-        mapSensorStatus(status) {
-            if (status == 0) return "not calibrated";
-            if (status == 1) return "calibrating...";
-            if (status == 2 || status == 3) return "calibrated";
-            return "unknown";
-        },
-        mapFusionMode(mode) {
-            if (mode == 0) return "initialization mode";
-            if (mode == 1) return "fusion mode";
-            if (mode == 2) return "suspended fusion mode";
-            if (mode == 3) return "disabled fusion mode";
-            return "unknown";
-        },
-        mapFixType(type) {
-            if (type == 0) return "no fix";
-            if (type == 1) return "dead reckoning only";
-            if (type == 2) return "2d-fix";
-            if (type == 3) return "3d-fix";
-            if (type == 4) return "gnss + dead reckoning";
-            if (type == 5) return "time only fix";
-            return "unknown";
-        },
-        triggerRecording() {
-            $fetch("/api/gps/recording", { method: "POST" });
-            $fetch("/api/gps/recording").then((res) => (this.recording_state = res));
-        },
-    },
-    mounted() {
-        this.api_key = store.get("navigation.api_key");
-        const model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
-        model.color.primary = store.get("navigation.model.primary");
-        this.model = model;
+const api_key = new Setting("navigation.api_key");
+const model = new Setting<Model>(
+    "navigation.model",
+    models[0],
+    (value) => value?.name,
+    (value) => models.find((m) => m.name == value)
+);
+const color = new Setting<string>("navigation.model.primary", "hsl(30, 100%, 50%)");
+const gps_status = ref<UBX_ESF_STATUS_DATA>();
+const gps_position = ref<UBX_NAV_PVT_DATA>();
+const recording_state = ref<{ status: boolean; recordings: Array<string> }>();
+const { $socket } = useNuxtApp();
 
-        this.$socket.on("gps", (packet) => {
-            if (packet.packet_class == 0x10 && packet.packet_id == 0x10) {
-                this.gps_status = packet;
-            }
+var car: NavigationCar;
 
-            if (packet.packet_class == 0x01 && packet.packet_id == 0x07) {
-                this.gps_position = packet;
-            }
-        });
+model.watch((value) => car.setModel(value));
 
-        $fetch("/api/gps/recording").then((res) => (this.recording_state = res));
-    },
-};
+color.watch((value) => {
+    console.log(model.value);
+    car.setColor(model.value.colorMapping.primary, value);
+});
+
+function mapSensorStatus(status) {
+    if (status == 0) return "not calibrated";
+    if (status == 1) return "calibrating...";
+    if (status == 2 || status == 3) return "calibrated";
+    return "unknown";
+}
+function mapFusionMode(mode) {
+    if (mode == 0) return "initialization mode";
+    if (mode == 1) return "fusion mode";
+    if (mode == 2) return "suspended fusion mode";
+    if (mode == 3) return "disabled fusion mode";
+    return "unknown";
+}
+function mapFixType(type) {
+    if (type == 0) return "no fix";
+    if (type == 1) return "dead reckoning only";
+    if (type == 2) return "2d-fix";
+    if (type == 3) return "3d-fix";
+    if (type == 4) return "gnss + dead reckoning";
+    if (type == 5) return "time only fix";
+    return "unknown";
+}
+
+function triggerRecording() {
+    $fetch("/api/gps/recording", { method: "POST" });
+    $fetch("/api/gps/recording").then((res) => (recording_state.value = res as { status: boolean; recordings: Array<string> }));
+}
+
+onMounted(async () => {
+    const carElement = await awaitElement("car");
+
+    car = new NavigationCar(carElement);
+    await car.setModel(model.value);
+    car.setPosition(0, 0, 550);
+    car.setRotation(10, 60, 0);
+
+    var rotation = 0;
+    setInterval(() => car.setRotation(10, rotation++, 0), 25);
+
+    $socket.on("gps", (packet) => {
+        if (packet.packet_class == 0x10 && packet.packet_id == 0x10) gps_status.value = packet;
+        if (packet.packet_class == 0x01 && packet.packet_id == 0x07) gps_position.value = packet;
+    });
+
+    $fetch("/api/gps/recording").then((res) => (recording_state.value = res as { status: boolean; recordings: Array<string> }));
+});
 </script>
 
 <template>
     <div class="main">
-        <vtextfield v-model="api_key" title="Google API Key" />
+        <vtextfield v-model="api_key.value" title="Google API Key" />
         <div class="title">Auto Model</div>
-        <vselect v-model="model" :items="models" item-text="name" />
-        <color-picker v-model="color" />
-        <navigation-car style="min-height: 200px" :model="model" :camera="{ x: 0, y: 0, z: 550 }" :rotation="{ x: 10, y: 60, z: 0 }" @ready="ready" />
+        <vselect v-model="model.value" :items="models" item-text="name" />
+        <color-picker v-model="color.value" />
+        <client-only><div id="car" style="min-height: 200px" /></client-only>
         <table>
             <tr>
                 <th>Gyroskope X</th>
@@ -168,7 +156,7 @@ export default {
     }
 }
 
-#nav-car {
+#car {
     width: 100%;
     height: 250px;
 }

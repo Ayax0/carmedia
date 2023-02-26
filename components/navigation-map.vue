@@ -4,6 +4,7 @@ import { getDistance } from "geolib";
 import { awaitElement } from "@/framework/utils";
 import RoutingApi from "@/framework/navigation/RoutingApi";
 import NavigationMap from "@/framework/navigation/NavigationMap";
+import NavigationCar from "@/framework/navigation/NavigationCar";
 
 import models from "@/framework/models";
 
@@ -11,16 +12,16 @@ const { $socket } = useNuxtApp();
 
 const ready = ref(false);
 const target = ref<string>();
+const camera = ref<{ x: number; y: number; z: number }>({ x: 0, y: 0, z: 2000 });
 var route: any;
 var route_index = 0;
 
 var map: NavigationMap;
+var car: NavigationCar;
 var api = new RoutingApi(store.get("navigation.api_key"));
 
 const model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
 model.color.primary = store.get("navigation.model.primary") || model.color.primary;
-
-var last_updated = Date.now();
 
 var searchTimeout;
 watch(target, (value) => {
@@ -37,11 +38,30 @@ function test(event) {
 
 onMounted(async () => {
     const mapElement = await awaitElement("map");
-
     map = new NavigationMap(mapElement);
-    $socket.on("gps", (packet) => map.triggerGps(packet));
+
+    const carElement = await awaitElement("car");
+    car = new NavigationCar(carElement);
 
     map.setCenter({ lat: 69.33962872160589, lon: 88.22484034061034 });
+
+    await car.setModel(model);
+    car.setPosition(0, 0, 2000);
+    car.setRotation(30, 180, 0);
+
+    map.on("zoom", () => car.setPosition(0, 0, -1000 * map.getZoom() + 20000));
+    map.on("pitch", () => car.setRotation(90 - map.getPitch(), 180, 0));
+
+    // setTimeout(() => {
+    //     map.easeTo({
+    //         zoom: 16,
+    //         pitch: 0,
+    //         duration: 1000,
+    //         easing: (num) => num,
+    //     });
+    // }, 3000);
+
+    $socket.on("gps", (packet) => map.triggerGps(packet));
 
     function calcCurrentStep() {
         if (!route) return;
@@ -67,8 +87,8 @@ onMounted(async () => {
 <template>
     <div class="map-wrapper">
         <div id="map" class="map">
-            <div v-if="ready" class="map-slot">
-                <navigation-car :model="model" />
+            <div class="map-slot">
+                <div id="car"></div>
                 <navigation-control v-model:target="target" :api="api" @submit="test" />
             </div>
         </div>
@@ -96,7 +116,7 @@ onMounted(async () => {
             right: 0;
             left: calc(calc(100% / 140) * 40);
 
-            #nav-car {
+            #car {
                 position: absolute;
                 top: 0;
                 left: 0;
