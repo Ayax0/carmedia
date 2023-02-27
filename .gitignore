@@ -10,3 +10,4 @@ dist
 version.txt
 map.mbtiles
 gps_dump
+framework/navigation/osrm/network

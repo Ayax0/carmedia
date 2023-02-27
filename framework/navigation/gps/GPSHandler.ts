@@ -1,14 +1,28 @@
 import { SerialPort, SerialPortOpenOptions } from "serialport";
 import { Socket, SocketConnectOpts } from "net";
 import { UBXParser } from "@nextlvlup/ubx-parser";
+import MapRouter from "../osrm/MapRouter";
 
 export default class GPSHandler {
     private stream: Socket | SerialPort;
     private parser: UBXParser = new UBXParser();
     private listeners: Map<GPSEvent, Array<(data: any) => void>> = new Map();
+    private router: MapRouter = new MapRouter();
 
     constructor() {
-        this.parser.on("data", (data) => this.listeners.get("data")?.forEach((cb) => cb(data)));
+        this.parser.on("data", async (data) => {
+            if (data.lat && data.lon) {
+                const snapped = await this.router.snapToGrid({ lat: data.lat, lon: data.lon });
+                if (snapped && snapped.lat && snapped.lon && snapped.distance) {
+                    // console.log("Acc:", data.hAcc / 1000, "Snap:", snapped.distance);
+                    if (data.hAcc < 5000 && snapped.distance * 1000 < data.hAcc + 2000) {
+                        data.lat = snapped.lat;
+                        data.lon = snapped.lon;
+                    }
+                }
+            }
+            this.listeners.get("data")?.forEach((cb) => cb(data));
+        });
     }
 
     listenSerial(options: SerialPortOpenOptions<any>) {

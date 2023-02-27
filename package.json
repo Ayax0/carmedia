@@ -9,6 +9,7 @@
         "postinstall": "nuxt prepare"
     },
     "devDependencies": {
+        "@types/project-osrm__osrm": "^5.27.0",
         "@types/three": "^0.149.0",
         "nuxt": "3.0.0-rc.10",
         "sass": "^1.54.9",
@@ -16,6 +17,7 @@
     },
     "dependencies": {
         "@nextlvlup/ubx-parser": "^1.1.6",
+        "@project-osrm/osrm": "^5.27.1",
         "alsa-volume": "0.0.4",
         "axios": "^0.27.2",
         "date-fns": "^2.29.3",
