@@ -57,7 +57,7 @@ Connect all HATs & install Raspberry Pi OS Lite.
 
 `sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
 
-`sudo apt install -y git libwidevinecdm0 python3-setuptools python3-pip screen nodejs build-essential libasound2-dev pulseaudio libgl1-mesa-dri libgl1-mesa-glx libgles2 libgles2-mesa libsqlite3-dev`
+`sudo apt install -y git libwidevinecdm0 python3-setuptools python3-pip screen nodejs build-essential libasound2-dev pulseaudio libgl1-mesa-dri libgl1-mesa-glx libgles2 libgles2-mesa libsqlite3-dev libstdc++-9-dev`
 
 ## lte setup
 
