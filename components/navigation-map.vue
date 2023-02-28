@@ -6,8 +6,8 @@ import NavigationMap from "@/framework/navigation/NavigationMap";
 import NavigationCar from "@/framework/navigation/NavigationCar";
 
 import models from "@/framework/models";
-import NavigationRouter from "~~/framework/navigation/NavigationRouter";
-import RoutingApi from "~~/framework/navigation/RoutingApi";
+import NavigationRouter, { SingleInstruction } from "~~/framework/navigation/NavigationRouter";
+import RoutingApi, { JSONGeocodeResult, Geocode } from "~~/framework/navigation/RoutingApi";
 
 const { $socket } = useNuxtApp();
 
@@ -18,13 +18,51 @@ var car: NavigationCar;
 var router: NavigationRouter;
 
 const target = ref<string>();
-const step = ref();
-const distance = ref();
+const destination_result = ref<JSONGeocodeResult>();
+
+const instruction = ref<SingleInstruction>();
 
 const model = models.find((model) => model.name == (store.get("navigation.model") || models[0].name));
 model.color.primary = store.get("navigation.model.primary") || model.color.primary;
 
-// watch(step, (value) => console.log(value));
+async function search() {
+    destination_result.value = await api.geocode(target.value, {
+        bias: {
+            type: "location",
+            lat: map.getCenter().lat,
+            lon: map.getCenter().lng,
+        },
+        lang: "de",
+        limit: 3,
+        format: "json",
+    });
+}
+
+function clearSearch() {
+    target.value = null;
+    destination_result.value = null;
+}
+
+function getCurrentDistance(target: { lat: number; lon: number }) {
+    return getDistance(map.getCenter(), target);
+}
+
+function formatDistance(distance: number) {
+    if (distance > 500) return `${Math.ceil(distance / 1000)} km`;
+    if (distance > 250) return "500 m";
+    if (distance > 100) return "250 m";
+    if (distance > 50) return "100 m";
+    if (distance > 10) return "50 m";
+    return `${Math.round(distance)} m`;
+}
+
+function route(target: Geocode) {
+    router.navigateTo({ lat: target.lat, lon: target.lon });
+}
+
+function clearRoute() {
+    router.reset();
+}
 
 onMounted(async () => {
     const mapElement = await awaitElement("map");
@@ -34,12 +72,7 @@ onMounted(async () => {
     car = new NavigationCar(carElement);
 
     router = new NavigationRouter(map, api);
-    router.on("leg", (data) => {
-        if (data) {
-            step.value = data;
-            distance.value = getDistance(map.getCenter(), data.properties.step_end);
-        }
-    });
+    router.on("index_change", (index) => (instruction.value = router.getInstruction(index)));
 
     await car.setModel(model);
     car.setPosition(0, 0, 2000);
@@ -60,31 +93,40 @@ onMounted(async () => {
             <div class="map-slot">
                 <div id="car"></div>
                 <div class="control-main">
-                    <div v-if="step" class="nav-step">
+                    <div class="nav-step" :class="{ active: instruction }">
                         <div class="step-maneuver">
-                            <direction-icon :name="step?.step_maneuver" size="2.5rem" />
-                            <div>{{ distance }}</div>
+                            <direction-icon name="off_ramp_right" size="2.5rem" />
+                            <div>{{ formatDistance(instruction?.distance) }}</div>
                         </div>
-                        <div class="step-action">{{ step.properties?.instruction?.transition_instruction }}</div>
+                        <div class="step-action">{{ instruction?.instruction }}</div>
                         <div class="step-progress">
-                            <div class="route-distance">{{ step?.distance }}</div>
-                            <div class="route-time">{{ step?.time }}</div>
-                            <div class="route-arrive">
-                                Ankunft um <b>{{ step?.arrival }}</b>
-                            </div>
+                            <div class="route-distance">{{ formatDistance(instruction?.distance_total) }}</div>
+                            <div class="route-time">17 min</div>
+                            <div class="route-arrive">Ankunft um <b>17:35</b></div>
                         </div>
                     </div>
-                    <div class="nav-action" :class="{ active: step != undefined }">
+                    <div class="nav-action" :class="{ active: instruction }">
                         <div class="nav-search">
-                            <div v-ripple class="nav-button"><Icon name="mdi:magnify" size="2rem" /></div>
-                            <input v-model="target" type="text" placeholder="Wo willst du hin?" />
+                            <div v-ripple class="nav-button" @click="clearSearch">
+                                <Icon :name="target?.length > 0 ? 'mdi:close' : 'mdi:magnify'" size="2rem" />
+                            </div>
+                            <input v-model="target" type="text" placeholder="Wo willst du hin?" @keypress.enter="search" />
                         </div>
                         <div class="nav-route">
-                            <div v-ripple class="nav-button"><Icon name="mdi:close" size="2rem" /></div>
+                            <div v-ripple class="nav-button" @click="clearRoute"><Icon name="mdi:close" size="2rem" /></div>
                             <div v-ripple class="nav-button"><Icon name="mdi:map-marker-distance" size="2rem" /></div>
                             <div v-ripple class="nav-button"><Icon name="mdi:gas-station" size="2rem" /></div>
                             <div v-ripple class="nav-button"><Icon name="mdi:volume-high" size="2rem" /></div>
                         </div>
+                    </div>
+                    <div class="nav-results" :class="{ active: destination_result != undefined && !instruction }">
+                        <template v-if="destination_result">
+                            <div v-ripple v-for="result in destination_result.results" class="nav-result" @click="route(result)">
+                                <div class="title text-overflow">{{ result.address_line1 }}</div>
+                                <div class="subtitle text-overflow">{{ result.address_line2 }}</div>
+                                <div class="distance">{{ formatDistance(getCurrentDistance({ lat: result.lat, lon: result.lon })) }}</div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -141,6 +183,9 @@ onMounted(async () => {
                     grid-template-columns: auto;
                     grid-template-rows: 4rem calc(100% - 4rem - 3rem - 0.8rem - 0.8rem) 3rem;
                     gap: 0.8rem;
+                    max-height: 0;
+                    overflow: hidden;
+                    transition: max-height 0.2s ease-in-out;
 
                     .step-maneuver {
                         display: flex;
@@ -197,6 +242,10 @@ onMounted(async () => {
                             font-weight: 100;
                         }
                     }
+                }
+
+                .nav-step.active {
+                    max-height: 100%;
                 }
 
                 .nav-action {
@@ -257,6 +306,55 @@ onMounted(async () => {
                     .nav-search {
                         margin-left: -100%;
                     }
+                }
+
+                .nav-results {
+                    display: flex;
+                    flex-direction: column;
+                    border-radius: 10px;
+                    background: rgba(50, 50, 55, 0.9);
+                    border: none;
+                    max-height: 0;
+                    transition: max-height 0.2s ease-in-out;
+                    overflow: hidden;
+                    .nav-result {
+                        padding: 1rem;
+                        border-bottom: 1px solid rgba(20, 20, 20, 0.6);
+                        display: grid;
+                        grid-template-areas:
+                            "title    distance"
+                            "subtitle distance";
+                        grid-template-columns: auto 5rem;
+                        grid-template-rows: 1fr 1fr;
+
+                        .title {
+                            grid-area: title;
+                            font-size: 20px;
+                        }
+
+                        .subtitle {
+                            grid-area: subtitle;
+                            font-size: 14px;
+                            font-weight: 100;
+                        }
+
+                        .distance {
+                            grid-area: distance;
+                            display: flex;
+                            justify-content: flex-end;
+                            align-items: center;
+                            font-weight: 100;
+                        }
+                    }
+
+                    :last-child {
+                        border: none;
+                    }
+                }
+
+                .nav-results.active {
+                    max-height: 100%;
+                    border: 1px solid rgba(30, 30, 35, 0.9);
                 }
             }
         }

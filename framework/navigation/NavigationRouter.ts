@@ -1,14 +1,16 @@
 import NavigationMap from "./NavigationMap";
-import RoutingApi, { convertLngLat, GeoJSONRouteResult, LatLon } from "./RoutingApi";
-import { getDistance } from "geolib";
+import RoutingApi, { convertLngLat, JSONRoute, JSONRouteResult, LatLon, Step } from "./RoutingApi";
+import { getDistance, getPathLength } from "geolib";
 
 export default class NavigationRouter {
     private map: NavigationMap;
     private api: RoutingApi;
 
-    private route: GeoJSONRouteResult;
-    private route_segments;
-    private route_index = 0;
+    private result: JSONRouteResult;
+    private line: RouteLine;
+    private instructions: RouteInstruction;
+
+    private current_index = 0;
 
     private listener: Map<string, Array<(data: any) => void>> = new Map();
 
@@ -17,95 +19,129 @@ export default class NavigationRouter {
         this.api = api;
 
         this.map.on("move", () => {
-            if (this.route && this.route_segments) {
+            if (this.line) {
                 const center = map.getCenter();
                 const distanceMap: Array<{ index: number; distance: number }> = [];
-                this.route_segments.features.forEach((feature: any) => {
-                    feature.geometry.coordinates.forEach((position: Array<number>) => {
-                        const distance = getDistance(center, { lat: position[1], lon: position[0] });
+                for (let feature of this.line.features) {
+                    for (let position of feature.geometry.coordinates) {
+                        let distance = getDistance(center, { lat: position[1], lon: position[0] });
                         distanceMap.push({ index: feature.properties.index, distance });
-                    });
-                });
+                    }
+                }
+
                 distanceMap.sort((a, b) => a.distance - b.distance);
-                if (distanceMap[0].index != this.route_index) {
-                    this.route_index = distanceMap[0].index;
+                if (distanceMap[0].index != this.current_index) {
+                    this.current_index = distanceMap[0].index;
 
-                    this.route_segments.features.forEach((feature: any) => {
-                        map.setFeatureState({ id: feature.id, source: "routing" }, { current_index: this.route_index });
-                    });
+                    for (let feature of this.line.features) {
+                        map.setFeatureState({ id: feature.id, source: "routing" }, { current_index: this.current_index });
+                    }
 
-                    this.listener.get("leg")?.forEach((cb) => cb(this.route_segments.features.find((feature) => feature.id == this.route_index)));
+                    for (let listener of this.listener.get("index_change")) listener(this.current_index);
                 }
             }
         });
     }
 
-    navigateTo(destination: LatLon, origin?: LatLon) {
-        this.api
-            .route<GeoJSONRouteResult>(origin || convertLngLat(this.map.getCenter()), destination, {
-                details: ["instruction_details", "route_details"],
-            })
-            .then((route) => {
-                this.route = route;
-                this.route_segments = this.parseRoute(this.route);
+    reset() {
+        if (this.map.getLayer("routing")) this.map.removeLayer("routing");
+        if (this.map.getSource("routing")) this.map.removeSource("routing");
+        this.result = undefined;
+        this.line = undefined;
+        this.instructions = undefined;
+        this.current_index = 0;
 
-                if (this.map.getSource("routing")) this.map.removeSource("routing");
-                this.map.addSource("routing", { type: "geojson", data: this.route_segments });
-
-                if (this.map.getLayer("routing")) this.map.removeLayer("routing");
-                this.map.addLayer(
-                    {
-                        id: "routing",
-                        source: "routing",
-                        type: "line",
-                        paint: {
-                            "line-color": ["case", [">=", ["number", ["feature-state", "current_index"], 0], ["get", "index"]], "#505050", "#940700"],
-                            "line-width": 8,
-                        },
-                        layout: {
-                            "line-cap": "round",
-                            "line-join": "round",
-                        },
-                    },
-                    "building"
-                );
-            })
-            .catch(() => console.error("error occoured on routing"));
+        for (let listener of this.listener.get("index_change")) listener(this.current_index);
     }
 
-    on(event: "leg", cb: (data: any) => void) {
+    async navigateTo(destination: LatLon, origin?: LatLon) {
+        if (!origin) origin = convertLngLat(this.map.getCenter());
+
+        this.result = await this.api.route<JSONRouteResult>(origin, destination, {
+            details: ["instruction_details", "route_details"],
+            traffic: "approximated",
+            format: "json",
+        });
+
+        this.line = this.parseLine(this.result);
+        this.instructions = this.parseInstructions(this.result);
+
+        console.log(this.result);
+        console.log(this.line);
+        console.log(this.instructions);
+
+        if (this.map.getSource("routing")) this.map.removeSource("routing");
+        this.map.addSource("routing", { type: "geojson", data: this.line });
+
+        if (this.map.getLayer("routing")) this.map.removeLayer("routing");
+        this.map.addLayer(
+            {
+                id: "routing",
+                source: "routing",
+                type: "line",
+                paint: {
+                    "line-color": ["case", [">=", ["number", ["feature-state", "current_index"], 0], ["get", "index"]], "#505050", "#940700"],
+                    "line-width": 8,
+                },
+                layout: {
+                    "line-cap": "round",
+                    "line-join": "round",
+                },
+            },
+            "building"
+        );
+
+        this.current_index = 0;
+        for (let listener of this.listener.get("index_change")) listener(this.current_index);
+    }
+
+    on(event: "index_change", cb: (data: any) => void) {
         if (!this.listener.has(event)) this.listener.set(event, []);
         this.listener.get(event).push(cb);
     }
 
-    private parseRoute(route: GeoJSONRouteResult): SegmentRouteResult {
-        if (!route.features) throw new Error("invalide route");
+    getInstruction(index: number): SingleInstruction {
+        if (!this.instructions || !this.instructions.instructions || !this.instructions.instructions[index]) return;
+        const step = this.instructions.instructions[index].step;
+        return {
+            distance_total: this.instructions.distance,
+            time_total: this.instructions.time,
+            distance: step.distance,
+            instruction: step.instruction,
+            maneuver: step.maneuver,
+            lane_count: step.lane_count,
+            speed_limit: step.speed_limit,
+            geometry: step.geometry,
+        };
+    }
+
+    private parseLine(data: JSONRouteResult): RouteLine {
+        let route: JSONRoute = JSON.parse(JSON.stringify(data.results[0]));
+        let segments: Array<RouteSegment> = [];
 
         let id = 0;
-        let segments: Array<RouteSegment> = [];
-        for (let [leg_index, leg] of route.features[0].properties.legs.entries()) {
-            if (route.features[0].geometry.type == "GeometryCollection") continue;
-            let leg_geometry = route.features[0].geometry.coordinates[leg_index];
-
+        for (let [leg_index, leg] of route.legs.entries()) {
             for (let step of leg.steps) {
                 if (step.from_index == step.to_index) continue;
-                let step_geometry = leg_geometry.slice(step.from_index, step.to_index + 1);
-                let step_end = step_geometry[step_geometry.length - 1];
 
-                for (let i = 0; i < step_geometry.length - 1; i++) {
+                for (let step_index = step.from_index; step_index < step.to_index; step_index++) {
+                    let from = route.geometry[leg_index][step_index];
+                    let to = route.geometry[leg_index][step_index + 1];
+                    if (!from || !to) continue;
+
                     segments.push({
-                        id: id,
+                        id,
                         type: "Feature",
-                        geometry: { type: "LineString", coordinates: [step_geometry[i], step_geometry[i + 1]] },
-                        properties: {
-                            index: id,
-                            ...step,
-                            step_end: {
-                                lat: step_end[1],
-                                lon: step_end[0],
-                            },
+                        geometry: {
+                            type: "LineString",
+                            coordinates: [
+                                [from.lon, from.lat],
+                                [to.lon, to.lat],
+                            ],
                         },
+                        properties: { index: id },
                     });
+
                     id++;
                 }
             }
@@ -113,14 +149,82 @@ export default class NavigationRouter {
 
         return { type: "FeatureCollection", features: segments };
     }
+
+    private parseInstructions(data: JSONRouteResult): RouteInstruction {
+        let route: JSONRoute = JSON.parse(JSON.stringify(data.results[0]));
+        let instructions: Array<Instruction> = [];
+
+        let distance_carry = 0;
+        let time_carry = 0;
+        let step_distance_carry = 0;
+        let step_instruction_carry = null;
+        let step_maneuver_carry = null;
+        let step_index_carry = null;
+        for (let [leg_index, leg] of route.legs.reverse().entries()) {
+            for (let step of leg.steps.reverse()) {
+                if (step.from_index == step.to_index) {
+                    instructions.push({
+                        distance: 0,
+                        time: 0,
+                        step: {
+                            distance: 0,
+                            instruction: step.instruction?.text,
+                            maneuver: step.instruction?.type,
+                            lane_count: 0,
+                            speed_limit: 0,
+                            geometry: [],
+                        },
+                    });
+                    step_distance_carry = 0;
+                    step_instruction_carry = step.instruction?.text;
+                    step_maneuver_carry = step.instruction?.type;
+                    step_index_carry = step.to_index;
+                } else {
+                    time_carry += step.time;
+                    distance_carry += step.distance;
+                    step_distance_carry += step.distance;
+
+                    if (step.instruction) {
+                        step_distance_carry = 0;
+                        step_instruction_carry = step.instruction.text || step.instruction.transition_instruction;
+                        step_maneuver_carry = step.instruction.type;
+                        step_index_carry = step.to_index;
+                    }
+
+                    for (let step_index = step.to_index; step_index > step.from_index; step_index--) {
+                        instructions.push({
+                            distance: distance_carry,
+                            time: time_carry,
+                            step: {
+                                distance: step_distance_carry + getPathLength(route.geometry[leg_index].slice(step_index, step.to_index)),
+                                instruction: step.instruction?.transition_instruction || step_instruction_carry,
+                                maneuver: step_maneuver_carry,
+                                lane_count: step.lane_count,
+                                speed_limit: step.speed_limit,
+                                geometry: route.geometry[leg_index].slice(step_index, step_index_carry),
+                            },
+                        });
+                    }
+                }
+            }
+        }
+
+        return {
+            country_code: route.country_code,
+            distance: route.distance,
+            time: route.time,
+            toll: route.toll,
+            instructions: instructions.reverse(),
+        };
+    }
 }
 
-interface SegmentRouteResult {
+export interface RouteLine {
     type: "FeatureCollection";
     features: Array<RouteSegment>;
 }
 
-interface RouteSegment {
+export interface RouteSegment {
     id: number;
     type: "Feature";
     geometry: {
@@ -129,81 +233,37 @@ interface RouteSegment {
     };
     properties: {
         index: number;
-        distance: number;
-        time: number;
-        from_index: number;
-        to_index: number;
-        toll: true | null;
-        ferry: true | null;
-        tunnel: true | null;
-        bridge: true | null;
-        roundabout: true | null;
-        speed: number | null;
-        speed_limit: number | null;
-        truck_limit: number | null;
-        surface: "paved_smooth" | "paved" | "paved_rough" | "compacted" | "dirt" | "gravel" | "path" | "impassable" | null;
-        lane_count: number | null;
-        road_class: "motorway" | "trunk" | "primary" | "secondary" | "tertiary" | "unclassified" | "residential" | "service_other" | null;
-        name: string | null;
-        rightside: true | null;
-        traversability: "forward" | "backward" | "both" | null;
-        elevation: number | null;
-        max_elevation: number | null;
-        min_elevation: number | null;
-        elevation_gain: number | null;
-        instruction: {
-            text: string;
-            type:
-                | "None"
-                | "StartAt"
-                | "StartAtRight"
-                | "StartAtLeft"
-                | "DestinationReached"
-                | "DestinationReachedRight"
-                | "DestinationReachedLeft"
-                | "Straight"
-                | "Straight"
-                | "SlightRight"
-                | "Right"
-                | "SharpRight"
-                | "TurnAroundRight"
-                | "TurnAroundLeft"
-                | "SharpLeft"
-                | "Left"
-                | "SlightLeft"
-                | "Straight"
-                | "Right"
-                | "Left"
-                | "ExitRight"
-                | "ExitLeft"
-                | "Straight"
-                | "StayRight"
-                | "StayLeft"
-                | "Merge"
-                | "Roundabout"
-                | "Roundabout"
-                | "FerryEnter"
-                | "FerryExit"
-                | "Transit"
-                | "TransitTransfer"
-                | "TransitRemainOn"
-                | "TransitConnectionStart"
-                | "TransitConnectionTransfer"
-                | "TransitConnectionDestination"
-                | "PostTransitConnectionDestination"
-                | "MergeRight"
-                | "MergeLeft"
-                | null;
-            transition_instruction: string | null;
-            pre_transition_instruction: string | null;
-            post_transition_instruction: string | null;
-            streets: Array<string> | null;
-            exit_number: Array<string> | null;
-            exit_road_name: Array<string> | null;
-            exit_towards: Array<string> | null;
-            contains_next_instruction: true | null;
-            roundabout_exit: number | null;
-        };
-        step_end: { lat: number; lon: number };
     };
+}
+
+export interface RouteInstruction {
+    country_code: Array<string>;
+    distance: number;
+    time: number;
+    toll: true | null;
+    instructions: Array<Instruction>;
+}
+
+export interface Instruction {
+    distance: number;
+    time: number;
+    step: {
+        distance: number;
+        instruction: string;
+        maneuver: string;
+        lane_count: number;
+        speed_limit: number;
+        geometry: Array<LatLon>;
+    };
+}
+
+export interface SingleInstruction {
+    distance_total: number;
+    time_total: number;
+    distance: number;
+    instruction: string;
+    maneuver: string;
+    lane_count: number;
+    speed_limit: number;
+    geometry: Array<LatLon>;
 }
