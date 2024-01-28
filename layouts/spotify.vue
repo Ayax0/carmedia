@@ -14,6 +14,9 @@ export default {
             trackPosition: "0:00",
             trackLength: "0:00",
             paused: true,
+            query: "",
+            volume: 0,
+            volume_prev: 0
         };
     },
     methods: {
@@ -48,12 +51,23 @@ export default {
                 activeAudioPlayer.seek((trackLength / event.target.clientWidth) * event.offsetX);
             }
         },
+        transferPlayback() {
+            if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
+                const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+                activeAudioPlayer.tranferPlayback();
+            }
+        },
         formatMillis(millis) {
             if(!millis) millis = 0;
             const positionMinutes = Math.floor(millis / 60000);
             const positionSeconds = Math.round((millis % 60000) / 1000);
             return `${positionMinutes}:${positionSeconds.toLocaleString("de-CH", { minimumIntegerDigits: 2, useGrouping: false })}`;
-        }
+        },
+        search(event: KeyboardEvent) {
+            if(event.key != "Enter") return;
+            if(this.query == undefined || this.query.length == 0) navigateTo("/spotify");
+            else navigateTo("/spotify/search?query=" + this.query);
+        },
     },
     async mounted() {
         if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
@@ -77,6 +91,18 @@ export default {
                     this.progress = (100 / trackLength) * (lastPosition + timeDifference);
                 }
             }, 1000);
+
+            this.volume = (await $fetch("/api/volume"))["volume"];
+            setInterval(async () => {
+                if (this.volume_prev != this.volume) {
+                    try {
+                        await $fetch("/api/volume", { method: "post", body: { volume: this.volume } });
+                        this.volume_prev = this.volume;
+                    } catch (error) {
+                        console.error("error updating volume");
+                    }
+                }
+            }, 500);
         } else navigateTo("/app");
     },
 };
@@ -90,7 +116,7 @@ export default {
             <div class="home-button" @click="navigateTo('/spotify')"><Icon name="mdi:home" /></div>
             <div class="search-input">
                 <span><Icon name="mdi:magnify" /></span>
-                <input type="text" placeholder="Was möchtest du hören?" />
+                <input v-model="query" type="text" placeholder="Was möchtest du hören?" @keypress="search" />
             </div>
             <div class="spacer"></div>
             <div v-if="account" v-ripple class="account" @click="navigateTo('/spotify/login')">
@@ -116,7 +142,11 @@ export default {
                 <div v-ripple class="button" @click="next"><Icon name="mdi:skip-next" /></div>
             </div>
             <div class="action">
-                <div v-ripple class="button"><Icon name="mdi:cast-audio" /></div>
+                <div v-ripple class="button" @click="transferPlayback"><Icon name="mdi:laptop" /></div>
+                <div class="volume">
+                    <Icon name="mdi:volume" />
+                    <spotify-slider v-model="volume" />
+                </div>
             </div>
             <div class="progress" :style="{ '--player-progress': `${progress}%` }">
                 <div style="text-align: start">{{ trackPosition }}</div>
@@ -286,6 +316,14 @@ export default {
                 height: calc(100% - 2rem);
                 padding: 1rem;
             }
+
+            .volume {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding-right: 1rem;
+                height: calc(100%);
+            }
         }
 
         .progress {
@@ -312,6 +350,7 @@ export default {
                     background: white;
                     border-radius: 2.5px;
                     transition: width 1s ease;
+                    min-width: 10px;
                 }
             }
 

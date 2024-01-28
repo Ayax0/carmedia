@@ -1,3 +1,14 @@
+<script>
+export default {
+    name: "DefaultLayout",
+    watch: {
+        $route() {
+            this.$socket.removeAllListeners();
+        },
+    },
+};
+</script>
+
 <template>
     <div><slot /></div>
 </template>

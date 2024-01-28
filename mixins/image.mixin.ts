@@ -17,7 +17,7 @@ export default {
                 const img = new Image();
 
                 img.crossOrigin = "anonymous";
-                img.src = image.url;
+                img.src = image.url || image;
                 img.onload = () => {
                     context.drawImage(img, 0, 0);
                     try {

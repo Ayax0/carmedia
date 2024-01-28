@@ -78,13 +78,14 @@ export default {
 
 <style lang="scss" scoped>
 .playlist-body {
-    padding-bottom: 2rem;
+    padding-bottom: 1rem;
 
     table {
         width: 100%;
         border-spacing: 0;
         padding: 0 2rem;
         color: #ccc;
+        border-spacing: 0 1rem;
 
         tr > :nth-child(1) {
             text-align: center;
@@ -103,7 +104,7 @@ export default {
         td {
             font-weight: 100;
             font-size: 14px;
-            padding: 1rem 0.5rem;
+            padding: 0 0.5rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;

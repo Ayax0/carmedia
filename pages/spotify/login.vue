@@ -1,53 +1,36 @@
-<script lang="ts">
-import store from "store-js";
+<script lang="ts" setup>
 import carmedia from "@/framework";
 import SpotifyPlayer from "@/framework/audio/SpotifyPlayer";
+import Setting from "@/framework/Setting";
 
-export default {
-    name: "SpotifyLoginPage",
-    data() {
-        return {
-            auto_login: false,
-        };
-    },
-    computed: {
-        accounts() {
-            return store.get("spotify.accounts");
-        },
-    },
-    methods: {
-        async login(account) {
-            if (carmedia.activeAudioPlayer instanceof SpotifyPlayer) {
-                try {
-                    const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
-                    await activeAudioPlayer.linkAccount(account);
-                    await activeAudioPlayer.connect();
-                    activeAudioPlayer.tranferPlayback();
-                }catch(error) {
-                    console.error("spotify login error");
-                }
+const accounts = new Setting<Array<any>>("spotify.accounts", []);
 
-                navigateTo("/spotify");
-            } else navigateTo("/app");
-        },
-    },
-    mounted() {
-        if (this.accounts && this.accounts.length == 1) {
-            this.auto_login = true;
-            setTimeout(() => this.login(this.accounts[0]), 1000);
-        }
-    },
-};
+async function login(account) {
+    try {
+        const activeAudioPlayer = carmedia.activeAudioPlayer as SpotifyPlayer;
+        await activeAudioPlayer.linkAccount(account);
+        await activeAudioPlayer.connect();
+        activeAudioPlayer.tranferPlayback();
+        navigateTo("/spotify");
+    } catch (error) {
+        console.error("spotify login error");
+        navigateTo("/app");
+    }
+}
+
+onMounted(() => {
+    if (accounts.value.length == 1) setTimeout(() => login(accounts.value[0]), 1000);
+});
 </script>
 
 <template>
     <NuxtLayout name="spotify-login">
         <ClientOnly>
-            <div v-if="auto_login" class="auto-login">
+            <spotify-account v-if="accounts.value.length > 1" v-for="account in accounts.value" :account="account" @click="login(account)" />
+            <div v-else class="auto-login">
                 <spinner />
                 <span>Sie werden automatisch eingeloggt...</span>
             </div>
-            <spotify-account v-else v-for="account in accounts" :account="account" @click="login(account)" />
         </ClientOnly>
     </NuxtLayout>
 </template>

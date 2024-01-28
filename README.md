@@ -1,12 +1,65 @@
-# update / upgrade
+# Carmedia
+
+Goal of the project is to build a DIY Raspberry Pi based car radio. The radio comes with it's own LTE connection & GPS module for navigation.
+The software is still under development. The Spotify integration is already fully functional.
+
+## Required hardware
+
+-   Raspberry Pi 4 with a microSD Card
+-   7" Touchscreen for Raspberry Pi (eg. DFrobot 7" 800x480 TFT DSI Capacitive Touchscreen)
+-   HiFiBerry Amp2
+-   SixFab LTE Base HAT
+-   LTE module
+-   LTE antenna
+-   an angled micro USB cable
+-   Data SIM (with about 10Mbits speed)
+-   Mikroe GNSS 7 Click (GPS module)
+-   GPS antenna
+
+### Car radio connectors
+
+There are two common car radio connectors. We recommend buying an adapter cable & cutting off the not needed end.
+
+-   Quadlock https://de.aliexpress.com/item/1005003791204676.html?spm=a2g0o.order_list.order_list_main.80.41f65c5fsUb2BG&gatewayAdapt=glo2deu
+-   36Pin connector https://de.aliexpress.com/item/32984678591.html?spm=a2g0o.order_list.order_list_main.116.41f65c5fsUb2BG&gatewayAdapt=glo2deu
+
+## Car specific information’s
+
+### Toyota Aygo or Peugeot 107 or Citroen C1
+
+The required connector is called Quadlock. If your car comes with a small 1 DIN radio, there is a possibility to replace a plastic part in your car, which fits a 2 DIN radio.
+
+-   car panel to fit a bigger radio: https://www.aliexpress.com/item/4001163253040.html?spm=a2g0o.order_list.order_list_main.111.41f65c5fsUb2BG
+-   3d printed mount: https://www.thingiverse.com/thing:5810290
+
+Connect the Pins of Quadlock to the following Ports on the HiFiBerry.
+
+Please use <a href='https://connector.pinoutguide.com/40__16_12_12__pin_Head_Unit_Car_Stereo_Quadlock/'>this picture </a> as a reference for the Pin numbers.
+
+-   Block B: Pin 1 = V+
+-   Block A: Pin 16= V-
+-   Block A: Pin 3= Speaker L +
+-   Block A: Pin 7= Speaker L -
+-   Block A: Pin 2= Speaker R +
+-   Block A: Pin 6= Speaker L -
+
+---
+
+# Installation
+
+Connect all HATs & install Raspberry Pi OS Lite.
+
+## update / upgrade
+
 `sudo apt update && sudo apt upgrade -y`
 
-# install essentials
+## install essentials
+
 `sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo bash -`
 
-`sudo apt install -y git libwidevinecdm0 python3-setuptools python3-pip screen nodejs build-essential libasound2-dev pulseaudio libgl1-mesa-dri libgl1-mesa-glx libgles2 libgles2-mesa`
+`sudo apt install -y git libwidevinecdm0 python3-setuptools python3-pip screen nodejs build-essential libasound2-dev pulseaudio libgl1-mesa-dri libgl1-mesa-glx libgles2 libgles2-mesa libsqlite3-dev`
 
-# lte setup
+## lte setup
 
 `sudo raspi-config`
 
@@ -47,7 +100,8 @@ Autoreconnect Enter `Y`
 
 **Press ENTER key to reboot**
 
-# chromium setup
+## chromium setup
+
 `sudo apt install -y --no-install-recommends xserver-xorg x11-xserver-utils xinit openbox chromium-browser`
 
 `sudo nano /etc/xdg/openbox/autostart`
@@ -76,7 +130,8 @@ screen -dmS carmedia_update sh ~/update.sh
 [[ -z $DISPLAY && $XDG_VTNR -eq 1 ]] && startx -- -nocursor
 ```
 
-# hifiberry setup
+## hifiberry setup
+
 `sudo nano /boot/config.txt`
 
 remove following line: `dtparam=audio=on`
@@ -96,7 +151,7 @@ ctl.!default {
 }
 ```
 
-# fastboot
+## fastboot
 
 `sudo nano /boot/config.txt`
 
@@ -112,7 +167,8 @@ gpu_mem=64
 remove `spash`
 add `quiet` after rootwait
 
-# setup carmedia app
+## setup carmedia app
+
 `sudo git clone https://github.com/Ayax0/carmedia.git`
 
 `sudo git clone https://github.com/Ayax0/carmedia-keyboard.git`

@@ -19,24 +19,35 @@ export default defineNuxtConfig({
     modules: ["nuxt-icon"],
     serverHandlers: [
         {
-            route: "/ws",
-            handler: "@/server-middleware/socket",
+            route: "/gps",
+            handler: "@/server/gps",
+        },
+        {
+            route: "/mbtiles",
+            handler: "@/server/mbtiles",
         },
     ],
     app: {
         head: {
-            viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
-        }
+            viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0",
+        },
+    },
+    env: {
+        DB_USERNAME: process.env.DB_USERNAME,
+        DB_PASSWORD: process.env.DB_PASSWORD,
+        DB_HOST: process.env.DB_HOST,
+        DB_PORT: process.env.DB_PORT,
+        ORIGIN: process.env.ORIGIN,
     },
     hooks: {
         "build:done": async () => {
-            if(process.env.NODE_ENV == "production") {
+            if (process.env.NODE_ENV == "production") {
                 const version = await simpleGit(process.cwd()).revparse("HEAD");
 
                 fs.writeFile(path.join(process.cwd(), "version.txt"), version, (err) => {
-                    if(err) console.error(err);
+                    if (err) console.error(err);
                     else console.log("local version set");
-                })
+                });
             }
         },
     },

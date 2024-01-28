@@ -1,98 +1,82 @@
-<script>
-import store from "store-js";
+<script lang="ts" setup>
+import Setting from "@/framework/Setting";
 import SpotifyAPI from "@/api/spotify";
 
-export default {
-    name: "SpotifySettingsPage",
-    data() {
-        return {
-            client_id: null,
-            client_secret: null,
-            accounts: [],
-        };
-    },
-    computed: {
-        scope() {
-            return [
-                "user-modify-playback-state",
-                "user-read-playback-position",
-                "user-read-playback-state",
-                "user-read-currently-playing",
-                "playlist-read-private",
-                "playlist-read-collaborative",
-                "streaming",
-                "user-read-email",
-                "user-read-private",
-                "user-library-read",
-            ];
-        },
-        redirect_uri() {
-            return window.location.origin + window.location.pathname;
-        },
-    },
-    watch: {
-        client_id(value) {
-            store.set("spotify.client_id", value);
-        },
-        client_secret(value) {
-            store.set("spotify.client_secret", value);
-        },
-    },
-    methods: {
-        login() {
-            if (!this.client_id || !this.client_secret) return;
+const route = useRoute();
 
-            window.location.href =
-                "https://accounts.spotify.com/authorize?" +
-                new URLSearchParams({
-                    response_type: "code",
-                    client_id: this.client_id,
-                    scope: this.scope.join(" "),
-                    redirect_uri: this.redirect_uri,
-                    show_dialog: true,
-                }).toString();
-        },
-        async exchange(code) {
-            const spotify_api = new SpotifyAPI(this.client_id, this.client_secret);
-            try {
-                const exchange = await spotify_api.exchange(code, this.redirect_uri);
-                const account = await spotify_api.instance.get("/me");
+const client_id = new Setting("spotify.client_id");
+const client_secret = new Setting("spotify.client_secret");
+const accounts = new Setting<Array<any>>("spotify.accounts", []);
 
-                this.accounts = this.accounts.filter((_account) => _account.id != account.data.id);
+const scope = [
+    "user-modify-playback-state",
+    "user-read-playback-position",
+    "user-read-playback-state",
+    "user-read-currently-playing",
+    "playlist-read-private",
+    "playlist-read-collaborative",
+    "streaming",
+    "user-read-email",
+    "user-read-private",
+    "user-library-read",
+];
+var redirect_uri;
 
-                this.accounts.push({
-                    ...account.data,
-                    refresh_token: exchange.refresh_token,
-                });
+function login() {
+    if (!client_id.value || !client_secret.value) return;
 
-                store.set("spotify.accounts", this.accounts);
-                navigateTo(window.location.pathname);
-            } catch (error) {
-                console.error(error);
-            }
-        },
-    },
-    mounted() {
-        this.client_id = store.get("spotify.client_id");
-        this.client_secret = store.get("spotify.client_secret");
-        this.accounts = store.get("spotify.accounts") || [];
+    navigateTo(
+        "https://accounts.spotify.com/authorize?" +
+            new URLSearchParams({
+                response_type: "code",
+                client_id: client_id.value,
+                scope: scope.join(" "),
+                redirect_uri: redirect_uri,
+                show_dialog: "true",
+            }).toString(),
+        { external: true }
+    );
+}
+function logout(account) {
+    accounts.value = accounts.value.filter((a) => a.id != account.id);
+    navigateTo(route.path);
+}
+async function exchange(code) {
+    const spotify_api = new SpotifyAPI(client_id.value, client_secret.value);
+    try {
+        const exchange = await spotify_api.exchange(code, redirect_uri);
+        const account = await spotify_api.instance.get("/me");
 
-        if (this.$route.query.code) this.exchange(this.$route.query.code);
-    },
-};
+        const local_accounts = accounts.value.filter((a) => a.id != account.data.id);
+        local_accounts.push({ ...account.data, refresh_token: exchange.refresh_token });
+        accounts.value = local_accounts;
+
+        navigateTo(route.path);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+onMounted(() => {
+    redirect_uri = window.location.origin + window.location.pathname;
+    if (route.query.code) exchange(route.query.code);
+});
 </script>
 
 <template>
     <div class="main">
-        <vtextfield v-model="client_id" title="Client ID" />
-        <vtextfield v-model="client_secret" title="Client Secret" />
+        <vtextfield v-model="client_id.value" title="Client ID" />
+        <vtextfield v-model="client_secret.value" title="Client Secret" />
         <div class="title">Verbundene Accounts</div>
-        <div class="account" v-for="account in accounts">
+        <div class="account" v-for="account in accounts.value">
             <img v-if="account.images[0]" :src="account.images[0]?.url" />
             <div v-else class="avatar">{{ account.display_name.charAt(0) }}</div>
             <div class="info">
                 <div class="name">{{ account.display_name }}</div>
                 <div class="follower">{{ account.followers.total || 0 }} Follower</div>
+            </div>
+            <div class="action">
+                <vbutton @click="logout(account)" icon="mdi:logout" iconSize="1.5rem" width="4rem" height="4rem" />
             </div>
         </div>
         <div class="add-account" @click="login">Account hinzufügen</div>
@@ -138,6 +122,7 @@ export default {
         }
 
         .info {
+            flex: 1;
             .name {
                 font-size: 20px;
             }

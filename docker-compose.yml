@@ -1,0 +1,13 @@
+version: "3"
+services:
+    db:
+        image: postgres
+        container_name: carmedia-database
+        restart: unless-stopped
+        environment:
+            - POSTGRES_USER=${DB_USERNAME}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        ports:
+            - "${DB_PORT}:5432"
+        volumes:
+            - /opt/carmedia/db:/var/lib/postgresql/data

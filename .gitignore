@@ -8,3 +8,5 @@ package-lock.json
 .env
 dist
 version.txt
+map.mbtiles
+gps_dump

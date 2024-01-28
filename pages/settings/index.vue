@@ -1,27 +1,31 @@
-<script setup>
-import { Setting } from "@/utils/settings";
+<script lang="ts" setup>
+import Setting from "@/framework/Setting";
 
-var display_name = new Setting("general.display_name");
-var default_volume = new Setting("general.default_volume", 20);
-var branch = ref(new Setting("general.software_branch", "origin/master"));
+const display_name = new Setting("general.display_name", "carmedia");
+const default_volume = new Setting("general.default_volume", 20);
+const branch = new Setting("general.software_branch", "origin/master");
 
 const { data: branches } = await useFetch("/api/software/branch");
 
 const software_update = ref({ pending: false, error: false });
 
-async function updateSoftware() {
-    if(software_update.value.pending) return;
+function updateSoftware() {
+    if (software_update.value.pending) return;
 
     software_update.value.pending = true;
-    $fetch("/api/software/update", { method: "POST", body: { branch: branch.value.value } })
-    .then(() => {
-        software_update.value.pending = false;
-        software_update.value.error = false;
-    })
-    .catch(() => {
-        software_update.value.pending = false;
-        software_update.value.error = true;
-    })
+    $fetch("/api/software/update", { method: "POST", body: { branch: branch.value } })
+        .then(() => {
+            software_update.value.pending = false;
+            software_update.value.error = false;
+        })
+        .catch(() => {
+            software_update.value.pending = false;
+            software_update.value.error = true;
+        });
+}
+
+function restartDevice() {
+    $fetch("/api/hardware/restart", { method: "POST" });
 }
 </script>
 
@@ -44,6 +48,8 @@ async function updateSoftware() {
                 </div>
             </template>
         </ClientOnly>
+        <div class="title">Erweiterte Funktionen</div>
+        <button v-ripple @click="restartDevice">Gerät neustarten</button>
     </div>
 </template>
 
@@ -51,7 +57,7 @@ async function updateSoftware() {
 .main {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.5rem;
     overflow-y: auto;
     padding: 2rem;
 
@@ -80,7 +86,7 @@ async function updateSoftware() {
         border-radius: 5px;
         font-weight: lighter;
         border: 2px solid $primary;
-        background: rgba(20,20,20,0.5);
+        background: rgba(20, 20, 20, 0.5);
 
         div {
             display: flex;
@@ -88,5 +94,14 @@ async function updateSoftware() {
             gap: 10px;
         }
     }
+}
+
+button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: 2px solid $primary;
+    background: transparent;
+    color: white;
+    font-size: 16px;
 }
 </style>
